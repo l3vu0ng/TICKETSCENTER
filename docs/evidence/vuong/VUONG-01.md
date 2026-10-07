@@ -1,0 +1,83 @@
+# VUONG-01 — chính sách phí ban đầu, phần M0
+
+- Ngày kiểm: 07/10/2026, Asia/Bangkok. **PARTIAL**: DTO/validator đạt unit trên nền Khánh; toàn task và bản tích hợp develop còn **BLOCKED**.
+- Nhánh: `feature/vuong/vuong-01-finance-contracts-part-1`, rẽ từ develop `04336c267c38c959d3bceaa59cfc08c7ee828407`.
+- Dependency đã kiểm riêng: Khánh `1edbceda45063491c662d09600c7b4f2e2d779b9`, nhánh `feature/khanh/khanh-01-war-foundation`. Dependency này chưa vào develop/main khi kiểm; không có PR trên GitHub.
+- Evidence, log và ba file Java được commit cùng nhau với footer `Task-Id: VUONG-01`. SHA của commit chứa evidence là revision đầu ra; lấy bằng `git log -1 --format=%H -- src/main/java/vn/ticketscenter/service/settlement/CommissionPolicyValidator.java` và ghi trong Issue #5. Không tự ghi SHA tương lai.
+- Đã đọc spec/diagram, toàn bộ TEAM-CONTRACT, CONVENTIONS, API-MAP, COVERAGE, GIT-WORKFLOW và task Vương; nguồn hợp đồng vẫn là `04336c2`. Bản kiểm trước khi develop xuất hiện giữ ở [preflight](VUONG-01-preflight-04336c2.md); không dùng kết quả cũ làm nghiệm thu phiên này.
+
+## Khánh đã giao gì
+
+Issue #1 tick KHANH-01/02/04. Remote feature có POM WAR, dependency/plugin, shared types/error/clock, User/schema. Kiểm độc lập trên archive đúng SHA: `mvn -B verify` exit 0, **15 unit / 0 failure / 0 error / 0 skipped**, tạo WAR. Đây chứng minh phần build/unit, chưa đủ chứng minh auth/DB/transaction hoặc tất cả tiêu chí của ba task.
+
+Chưa có task evidence của Khánh trong `docs/evidence/khanh/` (chỉ `.gitkeep`). Chưa có TransactionRunner; AuthService là skeleton. User còn dùng Object cho organization role, chưa ghép Organization đúng hợp đồng. SQL health IT được phép skip khi thiếu TC_APP_BASE_URL; profile browser không có browser IT. Những điểm này giao Khánh xử lý/review; Vương không sửa file Khánh hay coi checkbox là evidence tích hợp.
+
+## File và hợp đồng đã triển khai
+
+| File của Vương | Đầu ra | Người nhận |
+|---|---|---|
+| `src/main/java/vn/ticketscenter/dto/settlement/CommissionPolicyCommand.java` | Record đúng bốn trường BigDecimal ratePercent/fixedFee, Instant effectiveFrom/effectiveTo | Đông: OrganizationService.approve/SP01; Vương: AdminServlet ở VUONG-12 |
+| `src/main/java/vn/ticketscenter/service/settlement/CommissionPolicyValidator.java` | `void validate(CommissionPolicyCommand)`; dùng BusinessException thật của Khánh | Đông gọi trước SQL; VUONG-04 dùng lại |
+| `src/test/java/vn/ticketscenter/service/settlement/CommissionPolicyValidatorTest.java` | 21 ca tham số kiểm dữ liệu, lỗi HTTP và precision | Đông/Khánh review; Liêm/Thái review tiền |
+
+Validator từ chối null, tỷ lệ/phí âm, khoản VND lẻ, số vượt decimal(19,6)/decimal(19,0), phần thập phân cần làm tròn, thiếu thời gian hoặc from >= to. Chấp nhận zero, trailing zero không đổi giá trị, giá trị biên SQL và rate > 100: không thêm cap nghiệp vụ, không mặc định 10% và không làm tròn đầu vào. Dùng `BusinessException.badRequest("INVALID_COMMISSION_POLICY", safeMessage)` => HTTP 400 theo module Khánh; không tạo bản sao exception.
+
+Validator không truy cập DB, không mở transaction và không tạo rule. Đông tạo APPROVED/CommissionRule/MANAGER cùng transaction SP01. HTTP body vẫn là `initialPolicy` theo TEAM-CONTRACT §3.5; decimal JSON được adapter Khánh parse theo hợp đồng, không suy ra exponential HTTP syntax từ ca BigDecimal Java. Chưa có caller triển khai trong repo này, chưa kiểm end-to-end approve.
+
+**API:** chỉ thêm kiểu/chữ ký Java đã thống nhất, chưa tạo endpoint. **SQL/UI:** chưa tạo/chạy migration, SP, Servlet/JSP hay ảnh; không có DB trước/sau vì chưa kết nối hoặc mutation. CommissionRule/Settlement/persistence/0050 chưa triển khai do thiếu model quan hệ và bản nền tích hợp.
+
+## Môi trường, fixture và cách kiểm
+
+Windows 11; Maven 3.9.16; OpenJDK `25+36` tại `C:\Users\Le Vuong\.jdks\openjdk-25`. JAVA_HOME/PATH chỉ đổi trong process lệnh; không sửa máy hoặc POM. Fixture thuần Java: FROM `2026-10-06T03:00:00Z`, TO `2027-01-01T00:00:00Z`; không phụ thuộc now và không DB/mock/provider.
+
+Checkout tạm `%TEMP%/ticketscenter-vuong-01-1edbced/checkout` lấy bằng git archive từ SHA Khánh, không merge/cherry-pick lên feature/develop. Overlay **chỉ ba file Java Vương trong bảng**. POM và BusinessException dùng nguyên bản Khánh. Kết quả này là kiểm kết hợp dependency được chỉ rõ, không phải develop tích hợp đã đạt.
+
+| Lệnh/ca thực chạy | Expected | Actual | Exit / gate |
+|---|---|---|---|
+| Archive Khánh, `mvn -B verify` | Nền WAR có unit thật | 15/15 unit, không skip, WAR tạo | 0 / PASS build-unit nền |
+| Overlay test trước production, `mvn -B -Dtest=CommissionPolicyValidatorTest test` | Thiếu type thì không compile | Thiếu DTO/validator | 1 / chưa có type |
+| DTO thật + validator no-op chỉ trong checkout tạm, cùng lệnh test | Negative assertions phải phát hiện thiếu hành vi | 21 chạy, 14 fail, 0 error/skip | 1 / RED đúng kỳ vọng |
+| Thay no-op bằng validator thật, `mvn -B verify` | 21 test mới + 15 nền đạt, đóng WAR | 36 chạy, 0 fail/error/skip; WAR có DTO/validator/BusinessException, không đóng Servlet API vào lib | 0 / PASS build-unit kết hợp |
+| Cùng checkout, `mvn -B -Psqlserver-it verify` | IT thật cần app/DB riêng; thiếu môi trường không được coi PASS | 36 unit đạt; KhanhHealthIT 3/3 **skipped**; không test SQL tài chính | 0 / **BLOCKED SQL/runtime** |
+| Cùng checkout, `mvn -B -Pbrowser-it verify` | Browser thật trên app | 36 unit đạt, **0 browser test** | 0 / **BLOCKED browser** |
+| Checkout feature từ develop, `mvn -B verify` | Dependency trong develop để compile | Thiếu package vn.ticketscenter.exception/BusinessException; POM nền develop chưa có dependency WAR/JUnit | 1 / **BLOCKED tích hợp** |
+| CommissionRuleTest/SettlementTest/SQLtest01 | Nghiệm thu toàn VUONG-01 | Chưa tồn tại ở phạm vi này; không chạy và không báo đạt | **BLOCKED** |
+
+TC_SQL_HOST, TC_TEST_DATABASE, TC_APP_BASE_URL chưa cấu hình khi kiểm. Không chọn DB demo hoặc deploy để vượt blocker. No-op phục vụ bước RED chỉ tồn tại trong checkout tạm rồi được thay thế; không có trong file nguồn được commit. Trích log đã lọc: [VUONG-01-validation.log](VUONG-01-validation.log).
+
+Tái lập GREEN sau khi checkout commit Vương (giữ nguyên SHA nền Khánh):
+
+```powershell
+$taskRoot = Join-Path $env:TEMP ('ticketscenter-vuong-replay-' + [guid]::NewGuid())
+New-Item -ItemType Directory -Path $taskRoot | Out-Null
+git archive --format=zip --output="$taskRoot/foundation.zip" 1edbceda45063491c662d09600c7b4f2e2d779b9
+Expand-Archive -LiteralPath "$taskRoot/foundation.zip" -DestinationPath "$taskRoot/checkout"
+$taskFiles = @(
+  'src/main/java/vn/ticketscenter/dto/settlement/CommissionPolicyCommand.java',
+  'src/main/java/vn/ticketscenter/service/settlement/CommissionPolicyValidator.java',
+  'src/test/java/vn/ticketscenter/service/settlement/CommissionPolicyValidatorTest.java'
+)
+foreach ($taskFile in $taskFiles) {
+  $taskDestination = Join-Path "$taskRoot/checkout" $taskFile
+  New-Item -ItemType Directory -Force (Split-Path $taskDestination) | Out-Null
+  Copy-Item -LiteralPath $taskFile -Destination $taskDestination
+}
+$env:JAVA_HOME = 'C:\Users\Le Vuong\.jdks\openjdk-25'
+$env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
+mvn -B -f "$taskRoot/checkout/pom.xml" verify
+# Expected: 36 tests, 0 failures/errors/skipped; WAR.
+# SQL/browser vẫn BLOCKED đến khi có môi trường/test thật và guard thiếu môi trường.
+```
+
+## Checklist và bàn giao còn thiếu
+
+- [x] Kiểm remote/Issue Khánh và verify độc lập build/unit trên SHA cụ thể.
+- [x] DTO và validator M0 đúng hợp đồng, 21 unit thật đạt trên dependency Khánh.
+- [x] Lưu code/test/evidence/log cùng commit; Issue #5 chỉ ghi phần đã kiểm, giữ VUONG-01 tổng hợp unchecked.
+- [ ] Khánh/người có quyền tích hợp: review/đưa KHANH-01/02 vào develop qua quy trình PR; bổ sung task evidence, TransactionRunner/PrincipalKind, sửa IT guard và mapping role thật cùng Đông. Phiên này không tạo PR/push/merge.
+- [ ] Đông: Organization/Event đúng diagram, schema nền và SP01 caller. Review DTO/validator này; tạo rule trong transaction approve của Đông, không gọi service mở transaction riêng.
+- [ ] Vương sau khi nhận model: CommissionRule/Settlement và mapping persistence, 0050, model tests/SQLtest01 thật; tiếp đó VUONG-02 FK/manifest/seeds, VUONG-03 principal với TransactionRunner.
+- [ ] Liêm/Thái: hợp đồng Order/Refund và schema/evidence miền để các task tổng tiền, snapshot/đối soát nhận đầu vào đúng.
+- [ ] Môi trường SQL Server test/Tomcat11 và TC_APP_BASE_URL; browser tests/SQL support thật. Khi dependency vào develop, chạy lại build/unit/SQL/browser trên SHA tích hợp; không dùng GREEN checkout tạm để tick toàn task.
+
+Reviewer đầu ra: Đông (approve/chính sách), Khánh (exception/build), Liêm/Thái (tiền). Chưa có reviewer chấp thuận trong phiên này. Không push/merge/deploy/nộp hồ sơ.

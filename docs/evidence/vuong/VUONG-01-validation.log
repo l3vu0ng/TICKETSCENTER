@@ -1,0 +1,50 @@
+VUONG-01 / 2026-10-07 / JDK 25+36 / Maven 3.9.16
+Foundation: 1edbceda45063491c662d09600c7b4f2e2d779b9
+Own branch base: 04336c267c38c959d3bceaa59cfc08c7ee828407
+
+=== khanh-verify.log ===
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.047 s -- in vn.ticketscenter.config.ApplicationConfigTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.066 s -- in vn.ticketscenter.model.identity.UserTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Building war: C:\Users\LEVUON~1\AppData\Local\Temp\ticketscenter-vuong-01-1edbced\checkout\target\ticketscenter.war
+[INFO] BUILD SUCCESS
+
+=== vuong-missing-types.log ===
+[ERROR] /C:/Users/LEVUON~1/AppData/Local/Temp/ticketscenter-vuong-01-1edbced/checkout/src/test/java/vn/ticketscenter/service/settlement/CommissionPolicyValidatorTest.java:[6,39] package vn.ticketscenter.dto.settlement does not exist
+[INFO] BUILD FAILURE
+
+=== vuong-red.log ===
+[ERROR] Tests run: 21, Failures: 14, Errors: 0, Skipped: 0, Time elapsed: 0.183 s <<< FAILURE! -- in vn.ticketscenter.service.settlement.CommissionPolicyValidatorTest
+[ERROR]   CommissionPolicyValidatorTest.rejectsInvalidPolicyBeforeDatabaseWork:45 Expected vn.ticketscenter.exception.BusinessException to be thrown, but nothing was thrown.
+[ERROR] Tests run: 21, Failures: 14, Errors: 0, Skipped: 0
+[INFO] BUILD FAILURE
+
+=== vuong-green-verify.log ===
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.056 s -- in vn.ticketscenter.config.ApplicationConfigTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.079 s -- in vn.ticketscenter.model.identity.UserTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.093 s -- in vn.ticketscenter.service.settlement.CommissionPolicyValidatorTest
+[INFO] Tests run: 36, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Building war: C:\Users\LEVUON~1\AppData\Local\Temp\ticketscenter-vuong-01-1edbced\checkout\target\ticketscenter.war
+[INFO] BUILD SUCCESS
+
+=== sqlserver-profile.log ===
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.057 s -- in vn.ticketscenter.config.ApplicationConfigTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.108 s -- in vn.ticketscenter.model.identity.UserTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.112 s -- in vn.ticketscenter.service.settlement.CommissionPolicyValidatorTest
+[INFO] Tests run: 36, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Building war: C:\Users\LEVUON~1\AppData\Local\Temp\ticketscenter-vuong-01-1edbced\checkout\target\ticketscenter.war
+[WARNING] Tests run: 3, Failures: 0, Errors: 0, Skipped: 3, Time elapsed: 0.004 s -- in vn.ticketscenter.acceptance.KhanhHealthIT
+[WARNING] Tests run: 3, Failures: 0, Errors: 0, Skipped: 3
+[INFO] BUILD SUCCESS
+
+=== browser-profile.log ===
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.055 s -- in vn.ticketscenter.config.ApplicationConfigTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.090 s -- in vn.ticketscenter.model.identity.UserTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.099 s -- in vn.ticketscenter.service.settlement.CommissionPolicyValidatorTest
+[INFO] Tests run: 36, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Building war: C:\Users\LEVUON~1\AppData\Local\Temp\ticketscenter-vuong-01-1edbced\checkout\target\ticketscenter.war
+[INFO] BUILD SUCCESS
+
+=== develop-overlay-verify.log ===
+[ERROR] /E:/TICKETSCENTER/src/main/java/vn/ticketscenter/service/settlement/CommissionPolicyValidator.java:[4,34] package vn.ticketscenter.exception does not exist
+[INFO] BUILD FAILURE
