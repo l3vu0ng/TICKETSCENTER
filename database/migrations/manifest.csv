@@ -1,2 +1,3 @@
-file,sha256,owner,dependencies
-0050_settlements_audit.sql,fbeeb12fe9ee1b32610639d57d5ef2f15913096df361c9565dd2188d2098b4ae,VUONG,
+"file","sha256","owner","dependencies"
+"0050_settlements_audit.sql","fbeeb12fe9ee1b32610639d57d5ef2f15913096df361c9565dd2188d2098b4ae","VUONG",""
+"0700_roles_grants.sql","af5bcf1e85a3dd41cd69e2f9845e03a577f260afe79e29b31caa55cfdd2bb600","VUONG","0050_settlements_audit.sql"

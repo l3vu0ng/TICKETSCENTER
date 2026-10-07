@@ -7,7 +7,9 @@ if (-not (Test-Path -LiteralPath $runner)) { throw 'Expected the migration runne
 $scratch = Join-Path ([IO.Path]::GetTempPath()) ('ticketscenter-manifest-test-' + [guid]::NewGuid())
 New-Item -ItemType Directory -Path (Join-Path $scratch 'migrations') | Out-Null
 Copy-Item -LiteralPath $runner -Destination (Join-Path $scratch 'migrate.ps1')
-Copy-Item -LiteralPath (Join-Path $RepositoryRoot 'database/migrations/0050_settlements_audit.sql') -Destination (Join-Path $scratch 'migrations')
+foreach ($entry in (Import-Csv -LiteralPath (Join-Path $RepositoryRoot 'database/migrations/manifest.csv'))) {
+    Copy-Item -LiteralPath (Join-Path $RepositoryRoot ('database/migrations/' + $entry.file)) -Destination (Join-Path $scratch 'migrations')
+}
 Copy-Item -LiteralPath (Join-Path $RepositoryRoot 'database/migrations/manifest.csv') -Destination (Join-Path $scratch 'migrations')
 $testRunner = Join-Path $scratch 'migrate.ps1'
 
@@ -32,7 +34,7 @@ $originalManifest.Replace('0050_settlements_audit.sql', '../0050_settlements_aud
 ExpectFailure 'path traversal' 'Invalid migration filename' $baseArgs
 $originalManifest | Set-Content -LiteralPath $manifestPath
 $row = Import-Csv -LiteralPath $manifestPath
-$row.dependencies = '0099_missing.sql'
+$row[0].dependencies = '0099_missing.sql'
 $row | Export-Csv -NoTypeInformation -LiteralPath $manifestPath
 ExpectFailure 'missing declared dependency' 'Missing dependency' $baseArgs
 Write-Output 'VUONG-02 PASS: 7 preflight/guard cases; no mock SQL integration claim.'

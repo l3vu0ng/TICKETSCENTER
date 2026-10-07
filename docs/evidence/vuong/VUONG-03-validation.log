@@ -1,0 +1,59 @@
+=== security-red.log ===
+Expected four runtime roles before authorization tests.
+=== security-missing-secret.log ===
+  24 |  …  -gt 128) { throw "Required secret unavailable/invalid: $($identity.s …
+     | Required secret unavailable/invalid: TC_BUYER_PASSWORD
+=== security-provision.log ===
+PROVISIONED tc_buyer_user -> tc_buyer (Local)
+PROVISIONED tc_manager_user -> tc_manager (Local)
+PROVISIONED tc_checkin_user -> tc_checkin (Local)
+PROVISIONED tc_admin_user -> tc_platform_admin (Local)
+=== security-real-login.log ===
+PASS real login tc_buyer_login; readAllowed=False
+PASS real login tc_manager_login; readAllowed=False
+PASS real login tc_checkin_login; readAllowed=False
+PASS real login tc_admin_login; readAllowed=True
+=== security-green.log ===
+VUONG-03 PASS: admin read, 11 denied calls, GRANT/REVOKE/DENY competing source; no business SP/HTTP integration claimed.
+=== security-atomic-state.log ===
+PASS: second-user collision rolled back first login/user, preserved preexisting user
+=== security-demo-guard.log ===
+  11 |  … r_Test_[A-Za-z0-9_]+$') { throw 'Dedicated test database required.' }
+     | Dedicated test database required.
+=== security-existing-guard.log ===
+  56 |  …   } catch { throw "Provisioning failed for $($identity.user); credent …
+     | Provisioning failed for tc_buyer_user; credentials and SQL details suppressed.
+=== security-azure-blocked.log ===
+  10 |  …  'Azure') { throw 'Azure provisioning BLOCKED: provide the approved A …
+     | Azure provisioning BLOCKED: provide the approved Azure authentication caller for azure-users.sql.
+=== manifest-regression.log ===
+PASS missing domain manifests
+PASS financial preflight
+PASS checksum drift
+PASS demo database guard
+PASS missing environment
+PASS path traversal
+PASS missing declared dependency
+VUONG-02 PASS: 7 preflight/guard cases; no mock SQL integration claim.
+=== final-sql-it.log ===
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.048 s -- in vn.ticketscenter.config.ApplicationConfigTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.071 s -- in vn.ticketscenter.model.identity.UserTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.088 s -- in vn.ticketscenter.service.settlement.CommissionPolicyValidatorTest
+[INFO] Tests run: 36, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.374 s -- in vn.ticketscenter.acceptance.VuongMigrationIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.136 s -- in vn.ticketscenter.security.AuthorizationMatrixIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.219 s -- in vn.ticketscenter.security.DatabasePrincipalsIT
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+=== final-db-state.log ===
+migrationHistoryRows
+--------------------
+                   2
+businessRows
+------------
+           0
+runtimeUsers
+------------
+           4
+=== cleanup.log ===
+PASS: all session-owned test databases and four prefixed logins cleaned; no demo database selected
