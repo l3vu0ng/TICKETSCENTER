@@ -1,6 +1,6 @@
 # Hợp đồng phối hợp năm thành viên TicketsCenter
 
-Ngày lập: 06/10/2026. Đây là kế hoạch triển khai tương lai, không phải xác nhận đã có mã hoặc đã nghiệm thu. Các đường dẫn mã nguồn, chữ ký Service và cấu hình kiểm thử dưới đây là đầu ra phải tạo. Không dùng ngày trong lịch 21 ngày cũ để suy ra tiến độ.
+Ngày lập: 06/10/2026. Đồng bộ hợp đồng: 07/10/2026. Đây là kế hoạch triển khai tương lai, không phải xác nhận đã có mã hoặc đã nghiệm thu. Các đường dẫn mã nguồn, chữ ký Service và cấu hình kiểm thử dưới đây là đầu ra phải tạo. Không dùng ngày trong lịch 21 ngày cũ để suy ra tiến độ.
 
 ## 1. Nguồn chuẩn và cách sử dụng
 
@@ -99,8 +99,24 @@ Các quyết định sau áp dụng cả năm file, có hiệu lực trước ca
 - REFUND_TRANSFER payload schemaVersion1/refundId/attemptId, key refund-transfer:{refundId}:{attemptId}; EVENT_CANCELLATION payload schemaVersion1/eventId, key event-cancellation:{eventId}. Refund/payout adapter chỉ mô phỏng và lưu ledger kỹ thuật trong DB: MockRefundProviderLedger (0040 Thái) và MockPayoutProviderLedger (0050 Vương). Adapter thực hiện transaction riêng ngoài transaction nghiệp vụ, unique attemptId/payoutId và payload/amount kiểm replay. Vương cấp WORKER_TECH quyền hẹp ledger hoàn/ADMIN quyền ledger payout, không cấp browser hay DML tài chính rộng; backup/restore có ledger, state không vào Git. SQL role không được mở thêm SP16 cho worker.
 - Tie-break phân bổ discount: canonical UUID lowercase lexical Java String.compareTo; SQL CONVERT(char(36),id) COLLATE Latin1_General_100_BIN2 rồi ordinal. Không dùng SQL uniqueidentifier order khi Java dùng lexical.
 - Audit source USER/SYSTEM; worker actorId NULL/SYSTEM, user/admin thiếu actor rollback vì lỗi cấu hình. TR05 duy nhất ghi EVENT_STATUS_CHANGED. SESSION_CONTEXT phục vụ audit, không quyền.
-- M0 giao theo artifact: KHANH-01 build,02 types/HTTP,03 transaction,04 User/schema,06 auth interfaces; DONG-01 models/DTO/Service contract và02 schema; LIEM-01 contracts và02 schema; THAI-01 Refund/schema/DTO; VUONG-01 financial models/policy,02 manifest/fixture,03 grants. Có thể khai báo interface và tạo skeleton báo chưa triển khai để phá vòng phụ thuộc; không đợi toàn bộ task integration của người trước mới cung cấp type.
+- M0 giao theo artifact: KHANH-01 build,02 types/HTTP/clock,03 transaction,04 User/schema,06 auth interfaces, phần nền07 security và11 layout/API client; DONG-01 models/DTO/Service contract và02 schema; LIEM-01 contracts và02 schema; THAI-01 Refund/schema/DTO; VUONG-01 financial models/policy,02 manifest/fixture,03 grants. MeServlet do KHANH-13 cung cấp theo M1–M3; OrganizationServlet do DONG-05 tạo và DONG-11 bổ sung adapter; AdminServlet do VUONG-12 cung cấp. Hợp đồng M0 không đồng nghĩa các Servlet này đã triển khai. Có thể khai báo interface và tạo skeleton báo chưa triển khai để phá vòng phụ thuộc; không đợi toàn bộ task integration của người trước mới cung cấp type.
 - Migration order ngoại lệ khóa trước áp dụng: 0190_V09.sql→0200_F08.sql; 0300_V02.sql→0350_F03.sql; 0390_SP07.sql→0400_SP02.sql. Manifest và tên phải cùng thứ tự dependency; không đổi tên migration đã dùng chung.
+
+### 3.5. Hợp đồng HTTP dùng chung cho duyệt tổ chức và check-in
+
+Bảng này chốt tên trường và representation cho các adapter liên miền; API-MAP và ví dụ trong file thành viên phải đồng bộ theo bảng. Vương giữ AdminServlet/UI-19–21, Đông giữ OrganizationServlet/EventServlet, Thái giữ CheckInServlet/UI-15–16 và Service check-in.
+
+| Route / chủ adapter | Input hoặc representation | Service / đầu ra |
+|---|---|---|
+| POST `/admin/organization-requests/{id}/approve` — Vương | JSON `{"initialPolicy":{"ratePercent":"5.000000","fixedFee":"10000","effectiveFrom":"2026-10-01T00:00:00Z","effectiveTo":"2027-10-01T00:00:00Z"}}`; ADMIN + CSRF | `OrganizationService.approve(actor, organizationId, initialPolicy)` của Đông; 200 OrganizationDto APPROVED, trả cùng Organization khi duyệt lặp hợp lệ |
+| GET `/check-ins?organizationId=...&eventId=...` — Thái | Trang HTML; không có eventId hiển thị UI-15, có eventId hiển thị UI-16 sau kiểm tra phạm vi | `CheckInService.listEvents/window/history`; JSP `fulfillment/check-in-events.jsp` hoặc `fulfillment/check-in.jsp` |
+| GET `/organizations/{id}/check-in-events` — Đông | Mặc định HTML UI-15 dùng JSP của Thái; `Accept: application/json` trả JSON | `CheckInService.listEvents(actor, organizationId, page)`; Page<EventDto> trong envelope chung |
+| GET `/events/{id}/check-in-window` — Đông | Chỉ JSON, không forward JSP | `CheckInService.window(actor, eventId)`; CheckInWindowDto trong envelope chung |
+| GET `/events/{id}/check-ins` — Đông | Chỉ JSON, không forward JSP; UI-16 tải lịch sử từ route này | `CheckInService.history(actor, eventId, filter, page)`; Page<CheckInLogDto> trong envelope chung |
+
+Tên trường HTTP duyệt tổ chức duy nhất là `initialPolicy`; các trường con ánh xạ CommissionPolicyCommand của Vương. `initialCommissionPolicy` trong đặc tả SP01 là tên tham số logic của SQL, không phải trường JSON; Repository truyền các scalar `ratePercent`, `fixedFee`, `effectiveFrom`, `effectiveTo` theo DONG-04. Các con số trong ví dụ là fixture, không là chính sách phí mặc định.
+
+Check-in yêu cầu membership đang hoạt động MANAGER/CHECK_IN_STAFF đúng tổ chức; Service kiểm lại quyền và Event cho cả HTML/JSON. Quy tắc POST `/check-ins`, trạng thái lỗi và envelope giữ theo THAI-03/API-MAP; việc chọn representation không thay logic check-in.
 
 ## 4. Danh mục SQL và người nhận chính
 

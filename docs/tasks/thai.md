@@ -187,7 +187,7 @@ Khánh `/me/refund-requests` gọi listOwn, JSP my-refunds.jsp. Liêm `/orders/{
 | Thái GET `/refund-requests/{id}`, `/{id}/attempts` | RefundDto/Page<RefundAttemptDto>; owner hoặc ADMIN, HTML/JSON detail hoặc JSON attempts |
 | Thái GET `/check-ins?organizationId=...&eventId=...` | JSP chọn Event/UI15 hoặc quét/UI16; membership active MANAGER/CHECK_IN_STAFF cùng org |
 | Thái POST `/check-ins` | CheckInCommand →200 CheckInDto kể cả từ chối nghiệp vụ;400 transport,401/403 quyền,503 lỗi hệ thống; CSRF |
-| Đông GET `/organizations/{id}/check-in-events`, `/events/{id}/check-in-window`, `/events/{id}/check-ins` | Page<EventDto>/CheckInWindowDto/Page<CheckInLogDto>, cùng scope membership; window/history JSON |
+| Đông GET `/organizations/{id}/check-in-events`, `/events/{id}/check-in-window`, `/events/{id}/check-ins` | Theo TEAM-CONTRACT §3.5: danh sách mặc định HTML UI15 dùng JSP Thái, `Accept: application/json` trả Page<EventDto>; window/history chỉ JSON CheckInWindowDto/Page<CheckInLogDto>, không forward JSP UI16; cùng scope membership |
 | Vương GET `/admin/refund-requests`, `/{id}`; POST `/{id}/decision`, `/{id}/retry` | ADMIN, RefundDto/Page; decision/retry200, state409, POST CSRF |
 | Vương POST `/admin/payments/{id}/compensation/retry` | ADMIN, body{}, retryCompensation200; chỉ RETRYABLE sau FAILED verified |
 | Vương POST `/admin/events/{id}/cancel`, GET `/{id}/cancellation-progress` | ADMIN, cancel202 tiến độ, replay200; GET readonly; không chuyển tiền trong request |

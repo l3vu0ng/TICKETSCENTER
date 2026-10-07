@@ -166,7 +166,7 @@ Ví dụ một CashFlowRowDto: `{"metric":"CASH_FLOW","transactionId":"80000000-
 
 | Mốc | Vương cung cấp | Nhận từ thành viên khác |
 |---|---|---|
-| M0 | VUONG-01 models/policy/validator/Audit schema; VUONG-02 manifest/FK/fixture; VUONG-03 quyền nền | KHANH-01 shared types/tooling, DONG-01, LIEM-01 và THAI-01 cung cấp hợp đồng/model/schema nền; dùng đúng ID thực tại các file liên quan |
+| M0 | VUONG-01 models/policy/validator/Audit schema; VUONG-02 manifest/FK/fixture; VUONG-03 quyền nền | KHANH-01 build/tooling, KHANH-02 shared types/HTTP, KHANH-03 transaction, KHANH-04 User/schema, KHANH-06 auth interfaces; DONG-01, LIEM-01 và THAI-01 cung cấp hợp đồng/model/schema nền; dùng đúng ID thực tại các file liên quan |
 | M1 | Initial policy cho SP01 và rule cho SP12, admin adapter UI19/20 | Đông approval/publish services; Khánh auth/layout |
 | M2 | Catalog/grants từng object, report contracts và browser tooling | Liêm payment/ticket/outbox; Thái check-in |
 | M3 | Finance/report/CSV/audit/UI17–23 | Liêm kết quả thu/compensation; Thái nghĩa vụ/kết quả hoàn/cancel |
@@ -358,7 +358,7 @@ Quy ước đường dẫn viết ngắn trong các task: Java → `src/main/jav
 
 **Tạo:** AdminServlet dispatch; `admin/organizations.jsp`, `admin/events.jsp`, `admin/refunds.jsp`, `assets/js/admin-decisions.js`; `acceptance/VuongAdminDelegationIT.java`, `browser/VuongAdminDecisionsE2EIT.java`. **Nhận:** auth/CSRF Khánh, Organization/Event Service Đông, Refund/Cancellation Service Thái; policy VUONG-04.
 
-**Request mẫu:** approve org `{"initialCommissionPolicy":{"ratePercent":"10","fixedFee":"10000","effectiveFrom":"2026-10-06T00:00:00Z","effectiveTo":"2027-01-01T00:00:00Z"}}`; publish `{"commissionRuleId":"60000000-0000-0000-0000-000000000001"}`; reject `{"reason":"Thiếu liên hệ"}`; refund quyết định `{"decision":"APPROVE"}` hoặc `{"decision":"REJECT","rejectionReason":"..."}`. UUID rule phải có trong fixture registry trước chạy.
+**Request mẫu:** approve org `{"initialPolicy":{"ratePercent":"10","fixedFee":"10000","effectiveFrom":"2026-10-06T00:00:00Z","effectiveTo":"2027-01-01T00:00:00Z"}}`; publish `{"commissionRuleId":"60000000-0000-0000-0000-000000000001"}`; reject `{"reason":"Thiếu liên hệ"}`; refund quyết định `{"decision":"APPROVE"}` hoặc `{"decision":"REJECT","rejectionReason":"..."}`. Trường duyệt tổ chức theo TEAM-CONTRACT §3.5 và DONG-04; AdminServlet ánh xạ `initialPolicy` vào CommissionPolicyCommand rồi gọi OrganizationService.approve của Đông. UUID rule phải có trong fixture registry trước chạy.
 
 - [ ] GET list/detail HTML hoặc JSON theo helper; POST parse/validate/CSRF gọi đúng Service, 200/400/401/403/409 đúng contract. Không gọi Repository/SP miền khác trực tiếp.
 - [ ] UI19 chọn policy, duyệt đúng organizationId đang chờ; không tạo OrganizationRequest class.

@@ -4,7 +4,9 @@ Bộ nhiệm vụ năm thành viên xây cả giao diện lẫn backend. Đây l
 
 Khi một ô ghi `POST /auth/register,/auth/login`, hiểu là các endpoint POST riêng. ID trong URL là đầu vào không đáng tin, luôn đối chiếu owner/org từ DB. Nội dung này chốt phạm vi, chưa phải OpenAPI sinh từ ứng dụng đang chạy.
 
-Representation: GET/events và /events/{id} mặc định JSP, explicit Accept application/json trả cùng DTO/quyền. GET có trang dùng cùng cơ chế; /me/hold, coupon-eligibility, payment-status, check-in-window/history và refund attempts chỉ JSON. Return HTML, IPN protocol, QR image, export CSV. GET/orders/{id} render checkout khi PENDING_PAYMENT/detail khi đã chốt. Servlet wildcard owners và JSP forward paths theo TEAM; không mỗi endpoint một Servlet trùng mapping.
+Representation: GET/events và /events/{id} mặc định JSP, explicit Accept application/json trả cùng DTO/quyền. GET có trang dùng cùng cơ chế; /me/hold, coupon-eligibility, payment-status, check-in-window/history và refund attempts chỉ JSON. GET /check-ins là trang HTML UI-15/UI-16; GET /organizations/{id}/check-in-events mặc định HTML UI-15, explicit Accept application/json trả Page<EventDto>. Return HTML, IPN protocol, QR image, export CSV. GET/orders/{id} render checkout khi PENDING_PAYMENT/detail khi đã chốt. Servlet wildcard owners và JSP forward paths theo TEAM; không mỗi endpoint một Servlet trùng mapping.
+
+Đồng bộ hợp đồng ngày 07/10/2026 theo [TEAM-CONTRACT §3.5](TEAM-CONTRACT.md#35-hợp-đồng-http-dùng-chung-cho-duyệt-tổ-chức-và-check-in): POST /admin/organization-requests/{id}/approve dùng trường JSON `initialPolicy` chứa ratePercent/fixedFee/effectiveFrom/effectiveTo, gọi OrganizationService.approve của Đông qua AdminServlet Vương. Tên tham số logic SP01 `initialCommissionPolicy` không dùng làm tên trường JSON.
 
 | UI | Nghiệp vụ | Endpoint dự kiến | Đầu vào/đầu ra chính | Quyền/bất biến | Task backend cũ | Người/task hiện tại |
 |---|---|---|---|---|---|---|

@@ -306,7 +306,7 @@ mvn -B -Pbrowser-it verify
 
 ## LIEM-05 — SP06 một Order/Hold với snapshot bất biến
 
-**Mục tiêu/nguồn/mốc:** một lần tạo đơn, không kéo dài TTL/reprice; spec §5/6.4/14 SP06/TX06, ngày09; M2. **Phụ thuộc:** LIEM-01/02/04, KHANH-01 HTTP helpers.
+**Mục tiêu/nguồn/mốc:** một lần tạo đơn, không kéo dài TTL/reprice; spec §5/6.4/14 SP06/TX06, ngày09; M2. **Phụ thuộc:** LIEM-01/02/04, KHANH-02 HTTP helpers.
 
 **Create:** `database/migrations/0400_SP06.sql`, `src/main/java/vn/ticketscenter/repository/order/OrderRepository.java`, `src/main/java/vn/ticketscenter/service/order/OrderService.java`, `src/main/java/vn/ticketscenter/service/order/OrderQueryService.java`, `src/main/java/vn/ticketscenter/controller/order/OrderServlet.java`. **Modify:** `docs/backend/liem-contract.md`. **Test:** `database/tests/liem/LIEM-05.sql`, `src/test/java/vn/ticketscenter/acceptance/LiemOrderIT.java`.
 
@@ -422,7 +422,7 @@ Yêu cầu phối hợp THAI-11: SP09 bật retryFailedCompensation chỉ khi ac
 
 ## LIEM-13 — Query lịch sử, vé, QR và snapshot guard
 
-**Mục tiêu/nguồn/mốc:** owner đọc được vé thật và chia sẻ ảnh một vé, không rò QR/graph; spec §6.8/9 UI06–07/14 V06/TR08/IX03/IX11, ngày11; M2. **Phụ thuộc:** LIEM-01/05/10, KHANH-01 MeServlet/helpers, Thái Ticket transitions contract M0.
+**Mục tiêu/nguồn/mốc:** owner đọc được vé thật và chia sẻ ảnh một vé, không rò QR/graph; spec §6.8/9 UI06–07/14 V06/TR08/IX03/IX11, ngày11; M2. **Phụ thuộc:** LIEM-01/05/10, KHANH-02 HTTP helpers, Thái Ticket transitions contract M0. Bàn giao query/DTO cho phần orders/tickets của KHANH-13 MeServlet ở M2; hai bên ghép adapter khi query có, không chờ MeServlet hoàn tất mới cung cấp query.
 
 **Create:** `database/migrations/0300_V06.sql`, `database/migrations/0500_TR08.sql`, `src/main/java/vn/ticketscenter/repository/fulfillment/TicketRepository.java`, `src/main/java/vn/ticketscenter/service/fulfillment/TicketQueryService.java`, `TicketService.java`, `src/main/java/vn/ticketscenter/controller/fulfillment/TicketServlet.java`, `src/main/java/vn/ticketscenter/integration/qr/QrEncoder.java`; `src/main/webapp/WEB-INF/views/order/my-orders.jsp`, `src/main/webapp/WEB-INF/views/order/order-detail.jsp`, `src/main/webapp/WEB-INF/views/fulfillment/tickets.jsp`, `src/main/webapp/WEB-INF/views/fulfillment/ticket.jsp`; `src/main/webapp/assets/js/ticket-view.js`. **Modify:** `src/main/java/vn/ticketscenter/service/order/OrderQueryService.java`, gửi MeServlet adapter cho Khánh, `docs/backend/liem-contract.md`. **Test:** `src/test/java/vn/ticketscenter/acceptance/LiemTicketQueryIT.java`, `database/tests/liem/LIEM-13.sql` và browser cases `src/test/java/vn/ticketscenter/browser/LiemTicketBrowserIT.java`.
 
@@ -436,7 +436,7 @@ Yêu cầu phối hợp THAI-11: SP09 bật retryFailedCompensation chỉ khi ac
 
 ## LIEM-14 — UI04 checkout, UI05 trạng thái và UI14 coupon
 
-**Mục tiêu/nguồn/mốc:** đủ JSP/JS dùng backend thật, theo prototype và layout chung; spec §9 UI04/05/14/9.3, M2. **Phụ thuộc:** LIEM-04…10/13; Khánh layout/api-client/representation từ KHANH-01; Đông OrganizationServlet và Vương AdminServlet adapter M0 từ DONG-01/VUONG-01.
+**Mục tiêu/nguồn/mốc:** đủ JSP/JS dùng backend thật, theo prototype và layout chung; spec §9 UI04/05/14/9.3, M2. **Phụ thuộc:** LIEM-04…10/13; Khánh representation từ KHANH-02 và layout/api-client từ KHANH-11; hợp đồng M0 từ DONG-01/VUONG-01, OrganizationServlet do DONG-05 tạo và DONG-11 bổ sung coupon adapter, AdminServlet/coupon adapter do VUONG-12 phối hợp LIEM-06/14. Không coi hợp đồng M0 là Servlet đã triển khai.
 
 **Create:** `src/main/webapp/WEB-INF/views/ticketing/checkout.jsp`, `src/main/webapp/WEB-INF/views/payment/status.jsp`, `src/main/webapp/WEB-INF/views/order/coupons.jsp`; `src/main/webapp/assets/js/checkout.js`, `src/main/webapp/assets/js/payment-status.js`, `src/main/webapp/assets/js/coupons.js`; `src/test/java/vn/ticketscenter/browser/LiemCheckoutBrowserIT.java`, `src/test/java/vn/ticketscenter/browser/LiemCouponBrowserIT.java`. **Modify:** `src/main/java/vn/ticketscenter/controller/order/OrderServlet.java`, `VnpayServlet.java`, `src/main/java/vn/ticketscenter/controller/order/CouponServlet.java`, `docs/backend/liem-contract.md`; caller MeServlet/OrganizationServlet/AdminServlet do chủ sửa. **Test:** `src/test/java/vn/ticketscenter/acceptance/LiemSalesHttpIT.java` và browser classes trên.
 
