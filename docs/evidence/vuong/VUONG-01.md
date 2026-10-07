@@ -1,5 +1,25 @@
 # VUONG-01 — chính sách phí ban đầu, phần M0
 
+## Tiếp tục: schema độc lập đã kiểm SQL Server thật
+
+Ngày 07/10/2026, sau commit policy `85192d4d04e3e7f2c3e40938b58d4b617b26d16c`; hợp đồng và remote không đổi. Thêm `database/migrations/0050_settlements_audit.sql` và `database/tests/vuong/VUONG-01.sql`, chỉ vùng Vương sở hữu. Commit chứa thay đổi này và evidence là revision schema được kiểm (lấy `git log -1 --format=%H -- database/migrations/0050_settlements_audit.sql`).
+
+SQL Server local `17.0.1135.8`, Enterprise Developer Edition; Windows integrated authentication. Database riêng `TicketsCenter_Test_Vuong_b196ce73f3d8`, ban đầu 0 bảng; sau migration 6 bảng, sau test 0 dòng nghiệp vụ. Không kết nối database demo. `-C` chỉ dùng localhost với certificate local chưa được trust; không áp dụng chính sách này cho online. Log: [VUONG-01-schema-validation.log](VUONG-01-schema-validation.log).
+
+| Lệnh/ca | Expected | Actual | Exit / trạng thái |
+|---|---|---|---|
+| `sqlcmd -S localhost -d <testDb> -E -C -I -b -i database/tests/vuong/VUONG-01.sql` trước schema | Thiếu schema phải fail | THROW 51001 | 1 / RED |
+| Migration lần đầu khi sqlcmd chưa bật QUOTED_IDENTIFIER | Computed PERSISTED cần SET đúng | SQL 1934; điều tra DBCC USEROPTIONS thấy thiếu option, chỉ CommissionRule đã tạo | 1 / lỗi được sửa trước commit |
+| Dọn duy nhất bảng rỗng trong DB test riêng; chạy `0050` đã sửa SET và transaction | Có sáu bảng, C16–19/PK/unique/enum/NOT NULL | Tạo đủ CommissionRule, Settlement, SettlementOrderSnapshot, SettlementTransferLog, AuditLog, MockPayoutProviderLedger | 0 / PASS schema |
+| Chạy lại SQLtest01 với `-I -b` | 20 rejection đúng 547/515/2627; net350000; rollback fixtures | Tất cả đạt; 0 dòng còn lại | 0 / PASS constraint thật |
+| DB test mới: caller BEGIN TRAN → 0050 → kiểm @@TRANCOUNT=1 → THROW sau mutation → ROLLBACK | Không commit caller; không giữ schema dở dang | Sáu bảng rollback, 0 bảng còn lại; DB test phụ được xóa sau kiểm | 0 / PASS transaction schema |
+
+`netPayable` và `availableToPay` là computed PERSISTED, không có setter; các tổng snapshot và paid/pending là decimal(19,0). FK nội miền snapshot/log→Settlement có thật, no cascade delete. FK organization/event/order/actor sẽ ở 0100 khi nhận schema thật; chưa tạo bảng thay thế. MockPayoutProviderLedger chỉ là cấu trúc dữ liệu **mô phỏng bền vững**, chưa có adapter/payout tích hợp và không được coi nhà cung cấp thật.
+
+**Handoff cho Đông:** bảng CommissionRule có `id, organizationId, ratePercent decimal(19,6), fixedFee decimal(19,0), effectiveFrom/effectiveTo datetime2(7), version int`. SP01 tạo rule cùng APPROVED/MANAGER trong transaction của Đông. `applied` là trạng thái suy ra từ Event dùng rule, không thêm cờ SQL tùy ý. Đông phải ghép schema/caller và review trước tích hợp.
+
+**Còn BLOCKED:** CommissionRule/Settlement Java đủ quan hệ/phương thức, bốn JPA persistence records, FK liên miền, SP14–16/TR bảo vệ snapshot/audit, runtime SQL qua JPA và browser. Khánh có PrincipalKind trên feature nhưng chưa có TransactionRunner/nền trong develop; Đông chưa có Organization/Event. Tiêu đề, bảng và checklist bên dưới là evidence của commit policy trước, không phải cập nhật nghiệm thu SQL hiện tại. Toàn VUONG-01 vẫn chưa tick hoàn thành.
+
 - Ngày kiểm: 07/10/2026, Asia/Bangkok. **PARTIAL**: DTO/validator đạt unit trên nền Khánh; toàn task và bản tích hợp develop còn **BLOCKED**.
 - Nhánh: `feature/vuong/vuong-01-finance-contracts-part-1`, rẽ từ develop `04336c267c38c959d3bceaa59cfc08c7ee828407`.
 - Dependency đã kiểm riêng: Khánh `1edbceda45063491c662d09600c7b4f2e2d779b9`, nhánh `feature/khanh/khanh-01-war-foundation`. Dependency này chưa vào develop/main khi kiểm; không có PR trên GitHub.
