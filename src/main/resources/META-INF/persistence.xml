@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
+             https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
+             version="3.2">
+
+    <persistence-unit name="ticketscenter" transaction-type="RESOURCE_LOCAL">
+        <description>TicketsCenter JPA persistence unit — SQL Server</description>
+
+        <!-- All entity classes must be listed explicitly -->
+        <class>vn.ticketscenter.model.identity.User</class>
+
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+        <properties>
+            <!-- Hibernate validates schema on startup; never auto-creates/updates production DB -->
+            <property name="jakarta.persistence.schema-generation.database.action" value="none"/>
+            <property name="hibernate.hbm2ddl.auto" value="validate"/>
+            <!-- Dialect auto-detected; explicit for SQL Server 2012+ -->
+            <property name="hibernate.dialect"
+                      value="org.hibernate.dialect.SQLServerDialect"/>
+            <!-- Connection provided by PersistenceFactory (KHANH-03); no JNDI here -->
+            <!-- Statistics off in production; enable in dev with TC_APP_ENV=development -->
+            <property name="hibernate.generate_statistics" value="false"/>
+            <!-- Batch inserts for bulk operations -->
+            <property name="hibernate.jdbc.batch_size" value="25"/>
+            <property name="hibernate.order_inserts" value="true"/>
+            <property name="hibernate.order_updates" value="true"/>
+            <!-- Timezone: all Instant columns stored as UTC -->
+            <property name="hibernate.jdbc.time_zone" value="UTC"/>
+        </properties>
+    </persistence-unit>
+
+</persistence>
