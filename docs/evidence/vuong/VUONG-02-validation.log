@@ -1,0 +1,57 @@
+=== manifest-red.log ===
+   4 |  … ath -LiteralPath $runner)) { throw 'Expected the migration runner.' }
+     | Expected the migration runner.
+=== manifest-green.log ===
+PASS missing domain manifests
+PASS financial preflight
+PASS checksum drift
+PASS demo database guard
+PASS missing environment
+PASS path traversal
+PASS missing declared dependency
+VUONG-02 PASS: 7 preflight/guard cases; no mock SQL integration claim.
+=== migration-apply.log ===
+APPLIED 0050_settlements_audit.sql
+MIGRATIONS PASS (FinancialFoundation); Full acceptance also requires seeds, inventory and real module tests.
+=== migration-repeat.log ===
+UNCHANGED 0050_settlements_audit.sql
+MIGRATIONS PASS (FinancialFoundation); Full acceptance also requires seeds, inventory and real module tests.
+=== migration-state.log ===
+VUONG-02 PASS: one migration history entry, six financial tables, no business fixtures.
+=== applied-drift.log ===
+  89 |  … ne $hash) { throw "Applied checksum mismatch: $filename; never edit a …
+     | Applied checksum mismatch: 0050_settlements_audit.sql; never edit an applied migration.
+=== migration-fault.log ===
+ 117 |  … DE -ne 0) { throw "Migration failed (history not committed): $filenam …
+     | Migration failed (history not committed): 0050_settlements_audit.sql Msg 51205, Level 16, State 1, Server
+     | LAPTOP-215BGAUF, Line 110 Injected after financial mutation
+=== migration-fault-state.log ===
+PASS: failure after mutation leaves no financial tables or applied history
+=== migration-it-missing-env.log ===
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.053 s -- in vn.ticketscenter.config.ApplicationConfigTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.074 s -- in vn.ticketscenter.model.identity.UserTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.101 s -- in vn.ticketscenter.service.settlement.CommissionPolicyValidatorTest
+[INFO] Tests run: 36, Failures: 0, Errors: 0, Skipped: 0
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.078 s <<< FAILURE! -- in vn.ticketscenter.acceptance.VuongMigrationIT
+org.opentest4j.AssertionFailedError: BLOCKED: missing TC_SQL_HOST ==> expected: <true> but was: <false>
+[ERROR]   VuongMigrationIT.appliesAndRepeatsTheDeclaredMigrationScopeWithoutDuplicatingHistory:14 BLOCKED: missing TC_SQL_HOST ==> expected: <true> but was: <false>
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+[INFO] BUILD FAILURE
+=== migration-it-green.log ===
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.049 s -- in vn.ticketscenter.config.ApplicationConfigTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.077 s -- in vn.ticketscenter.model.identity.UserTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.102 s -- in vn.ticketscenter.service.settlement.CommissionPolicyValidatorTest
+[INFO] Tests run: 36, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.158 s -- in vn.ticketscenter.acceptance.VuongMigrationIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+=== migration-it-full-blocked.log ===
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.057 s -- in vn.ticketscenter.config.ApplicationConfigTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.085 s -- in vn.ticketscenter.model.identity.UserTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.090 s -- in vn.ticketscenter.service.settlement.CommissionPolicyValidatorTest
+[INFO] Tests run: 36, Failures: 0, Errors: 0, Skipped: 0
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 1.012 s <<< FAILURE! -- in vn.ticketscenter.acceptance.VuongMigrationIT
+  45 |  … y($file)) { throw "Missing required migration: $file (scope $Scope)"  …
+     | Missing required migration: 0010_identity.sql (scope Full)
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+[INFO] BUILD FAILURE
