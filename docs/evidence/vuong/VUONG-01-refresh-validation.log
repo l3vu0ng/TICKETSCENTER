@@ -1,0 +1,8 @@
+2026-10-08, routine main 90800f7; shared foundation 7b403f2.
+JDK 25+36; Maven 3.9.16.
+Isolated verification archive + current VUONG-01 source, temporary Organization/Event compile references:
+mvn -B clean verify -> exit 0; 106 tests, 0 failures/errors/skipped; WAR; Spotless PASS.
+Temporary references are not repository artifacts and do not prove owner behavior or JPA integration.
+Actual feature branch:
+mvn -B -DskipTests compile -> exit 1; missing Organization/Event only.
+No integrated-build PASS, no new SQL roundtrip claim, no peer review approval.

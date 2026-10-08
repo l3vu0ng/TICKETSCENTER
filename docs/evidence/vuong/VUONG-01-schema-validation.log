@@ -1,0 +1,15 @@
+=== sql01-red.log ===
+Msg 51001, Level 16, State 1, Server LAPTOP-215BGAUF, Line 7
+Expected VUONG-01 financial schema before running tests.
+=== schema01.log ===
+=== sql01-green.log ===
+VUONG-01 PASS: derived net, 20 constraint rejections, rollback; no FK integration claimed.
+=== sql01-atomic.log ===
+PASS: caller transaction retained; injected error after mutation rolls back all six tables
+=== sql01-state.log ===
+metric          actual
+--------------- -----------
+financialTables           6
+metric                    actual
+------------------------- -----------
+businessRowsAfterRollback           0
