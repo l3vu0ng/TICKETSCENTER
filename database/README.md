@@ -1,10 +1,11 @@
 # Migration registry — Vương / VUONG-02
 
-Manifest thực thi ở `migrations/manifest.csv`. Chỉ đăng ký file đã giao với checksum thật; không tạo dòng SHA giả cho schema thiếu. Hiện có 0050 và 0700 được đăng ký và kiểm phần nền. Nền 0010 của Khánh có trên feature `1edbced`, chưa vào develop; 0020/0030/0040 chưa có. 0100 chỉ tạo sau khi các chủ miền chốt PK/cột. Vì vậy scope Full bắt buộc fail trước kết nối; không coi FinancialFoundation là fresh install toàn hệ thống.
+Manifest thực thi ở `migrations/manifest.csv`. Chỉ đăng ký file đã giao với checksum thật; không tạo dòng SHA giả cho schema thiếu. Đã nhận 0010/0011 của Khánh từ foundation `7b403f2` và đăng ký cùng 0050. `IdentityFinancialFoundation` cài ba migration này; `FinancialFoundation` chỉ cài 0050. 0020/0030/0040 chưa có. 0100 chỉ tạo sau khi các chủ miền chốt PK/cột. Vì vậy scope Full bắt buộc fail trước kết nối; các scope nền không phải fresh install toàn hệ thống.
 
 | Migration cần nhận | Owner | Trạng thái |
 |---|---|---|
-| 0010_identity.sql | Khánh | Feature đã có; chờ tích hợp/review/checksum vào manifest |
+| 0010_identity.sql | Khánh | Đã nhận; checksum và owner trong manifest; review tích hợp còn chờ |
+| 0011_identity_validation.sql | Khánh | Đã nhận; dependency 0010 và checksum trong manifest |
 | 0020_organizations_events.sql | Đông | Chưa giao |
 | 0030_sales.sql | Liêm | Chưa giao |
 | 0040_refunds_checkin.sql | Thái | Chưa giao |
@@ -18,4 +19,10 @@ Checksum = SHA256 của nội dung UTF-8 không BOM, đổi CRLF thành LF (khô
 
 `SchemaMigrationHistory` là hạ tầng kỹ thuật, không thêm lớp nghiệp vụ. Mỗi migration và history entry dùng cùng transaction/connection, có application lock; lỗi SQL ngắt sqlcmd và connection rollback transaction chưa commit. Applied hash lệch phải fail; không sửa history để vượt qua lỗi trong DB dùng chung. Concurrent runner có thể phải chạy lại sau lỗi cạnh tranh; không báo thành công cho migration chưa commit.
 
-Lệnh và cách kiểm thật: [database-runbook](../docs/backend/database-runbook.md). Registry ID/clock: [fixture-registry](../docs/backend/fixture-registry.md). Mapping/schema còn thiếu: [model-map](../docs/backend/model-map.md), [normalization](../docs/backend/normalization.md). `-Scope FinancialSecurityFoundation` chạy 0050+0700; [security-matrix](../docs/backend/security-matrix.md) ghi quyền đã cấp/chưa cấp và provisioning tách riêng. Chưa có seed toàn miền hoặc FK hoàn chỉnh; chưa nghiệm thu VUONG-02.
+Lệnh và cách kiểm thật: [database-runbook](../docs/backend/database-runbook.md). Registry ID/clock: [fixture-registry](../docs/backend/fixture-registry.md). Mapping/schema còn thiếu: [model-map](../docs/backend/model-map.md), [normalization](../docs/backend/normalization.md). Chưa có seed toàn miền hoặc FK hoàn chỉnh; chưa nghiệm thu VUONG-02.
+
+`FinancialSecurityFoundation` chạy 0050+0700; quyền và provisioning tách riêng
+được mô tả trong [security-matrix](../docs/backend/security-matrix.md).
+Để kiểm cả identity và quyền nền trên DB test rỗng, chạy
+`IdentityFinancialFoundation` rồi `FinancialSecurityFoundation`; 0050
+phải UNCHANGED ở lượt sau. Đây vẫn là nền bốn migration, không phải Full.

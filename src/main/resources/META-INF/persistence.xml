@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
+             https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+             version="3.0">
+
+    <persistence-unit name="ticketscenter" transaction-type="RESOURCE_LOCAL">
+        <description>TicketsCenter JPA persistence unit — SQL Server</description>
+
+        <!-- All entity classes must be listed explicitly -->
+        <class>vn.ticketscenter.model.identity.User</class>
+        <class>vn.ticketscenter.persistence.identity.OtpRecord</class>
+        <class>vn.ticketscenter.persistence.identity.ResetGrantRecord</class>
+
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+        <properties>
+            <!-- Validate on the first transaction; migrations own schema changes. -->
+            <property name="jakarta.persistence.schema-generation.database.action" value="none"/>
+            <property name="hibernate.hbm2ddl.auto" value="validate"/>
+            <property name="hibernate.dialect"
+                      value="org.hibernate.dialect.SQLServerDialect"/>
+            <!-- PersistenceFactory supplies the shared pool. -->
+            <property name="hibernate.generate_statistics" value="false"/>
+            <!-- Batch inserts for bulk operations -->
+            <property name="hibernate.jdbc.batch_size" value="25"/>
+            <property name="hibernate.order_inserts" value="true"/>
+            <property name="hibernate.order_updates" value="true"/>
+            <!-- Timezone: all Instant columns stored as UTC -->
+            <property name="hibernate.jdbc.time_zone" value="UTC"/>
+        </properties>
+    </persistence-unit>
+
+</persistence>

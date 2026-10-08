@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [ValidateSet('Full', 'FinancialFoundation', 'FinancialSecurityFoundation')][string]$Scope = 'Full',
+    [ValidateSet('Full', 'FinancialFoundation', 'IdentityFinancialFoundation', 'FinancialSecurityFoundation')][string]$Scope = 'Full',
     [string]$Server = $env:TC_SQL_HOST,
     [string]$Database = $env:TC_TEST_DATABASE,
     [ValidateSet('Integrated', 'SqlLogin')][string]$Authentication = 'Integrated',
@@ -38,8 +38,10 @@ foreach ($entry in $entries) {
     $previous = $entry.file
 }
 $required = if ($Scope -eq 'Full') {
-    @('0010_identity.sql','0020_organizations_events.sql','0030_sales.sql','0040_refunds_checkin.sql',
+    @('0010_identity.sql','0011_identity_validation.sql','0020_organizations_events.sql','0030_sales.sql','0040_refunds_checkin.sql',
       '0050_settlements_audit.sql','0100_cross_domain_keys.sql','0700_roles_grants.sql')
+} elseif ($Scope -eq 'IdentityFinancialFoundation') {
+    @('0010_identity.sql','0011_identity_validation.sql','0050_settlements_audit.sql')
 } elseif ($Scope -eq 'FinancialSecurityFoundation') {
     @('0050_settlements_audit.sql','0700_roles_grants.sql')
 } else { @('0050_settlements_audit.sql') }
