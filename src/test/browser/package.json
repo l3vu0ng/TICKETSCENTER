@@ -1,0 +1,8 @@
+{
+  "name": "ticketscenter-browser-tests",
+  "private": true,
+  "version": "0.0.0",
+  "engines": { "node": ">=20" },
+  "dependencies": { "playwright": "1.62.1" },
+  "scripts": { "install-browser": "playwright install chromium" }
+}

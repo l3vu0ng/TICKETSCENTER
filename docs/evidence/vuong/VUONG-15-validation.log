@@ -1,0 +1,27 @@
+VUONG-15 / M0 / 2026-10-08
+Routine: 90800f7; develop: d2282d7; dependency Khanh: 7b403f2
+RED: test-compile missing BrowserTestSupport, exit1.
+Local environment: JDK25 AF_UNIX Selector.open connect failure; process-only TCP fallback verified.
+Production config rejected before Tomcat startup.
+npm ci: locked Playwright1.62.1; node script syntax PASS.
+Workflow YAML parse with unique keys PASS.
+Skip-target Enter focus: deferred to layout owner; M0 smoke checks Tab and outline only.
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.090 s -- in vn.ticketscenter.config.ApplicationConfigTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.882 s -- in vn.ticketscenter.controller.ErrorHandlingTest
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.056 s -- in vn.ticketscenter.controller.HttpContractTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.259 s -- in vn.ticketscenter.identity.AuthFoundationTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.037 s -- in vn.ticketscenter.model.identity.UserTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.081 s -- in vn.ticketscenter.security.RequestSecurityTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.086 s -- in vn.ticketscenter.transaction.TransactionRunnerTest
+[INFO] Tests run: 59, Failures: 0, Errors: 0, Skipped: 0
+M0 layout PASS: 320px / keyboard / escaped content / UI states
+M0 layout PASS: 375px / keyboard / escaped content / UI states
+M0 layout PASS: 768px / keyboard / escaped content / UI states
+M0 layout PASS: 1440px / keyboard / escaped content / UI states
+M0 BROWSER PASS: WAR live / isolated session / CSRF denial / unimplemented login501
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.815 s -- in vn.ticketscenter.browser.WholeProjectE2EIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+WARNING: sun.misc.Unsafe::staticFieldBase has been called by com.diffplug.spotless.java.ModuleHelper (file:/C:/Users/Le%20Vuong/.m2/repository/com/diffplug/spotless/spotless-lib/2.45.0/spotless-lib-2.45.0.jar)
+WARNING: Please consider reporting this to the maintainers of class com.diffplug.spotless.java.ModuleHelper
+[INFO] Spotless.Java is keeping 71 files clean - 0 needs changes to be clean, 71 were already clean, 0 were skipped because caching determined they were already clean
+[INFO] BUILD SUCCESS
