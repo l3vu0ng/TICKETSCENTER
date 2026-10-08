@@ -72,3 +72,8 @@ Ngày 08/10/2026 12:04:06 +07:00, clean verify/http-it exit0: 59 unit + 1 WAR IT
 fail/error/skip0; 69 Java files đúng formatter. Node5tests và browser4viewport PASS.
 Không đổi phần Đông/SQL DEFERRED. Hướng dẫn nối artifact và giới hạn CI ở
 [bàn giao M0](../../backend/khanh-m0-handoff.md).
+
+CI push đầu tiên của PR7 dừng ở missing FeaturePackageStructureTest/No tests were executed.
+Đã bổ sung 3 kiểm tra cấu trúc/mapping thực, giữ failIfNoTests. Kiểm lại 12:09:26 +07:00:
+clean verify/http-it exit0, 62 unit + 1 WAR IT, fail/error/skip0, 70 Java files đúng formatter;
+browser4viewport PASS. Không sửa CI SQL hoặc báo integration đã nghiệm thu.

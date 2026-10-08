@@ -57,13 +57,15 @@ PR/evidence nêu rõ phần được kiểm và phần chờ tích hợp.
 ## Kiểm chứng trước push
 
 Bản ghép với develop d2282d702445911e65d174a1e853273c4164bf96:
-clean verify/http-it exit0, 59 unit + 1 WAR IT, fail/error/skip0;
-69 Java files đúng formatter, 5 Node tests PASS và browser320/375/768/1440 PASS.
-Hoàn tất 08/10/2026 12:04:06 +07:00; output ở Local Temp/ticketscenter-m0-handoff-20261008.
+clean verify/http-it exit0, 62 unit + 1 WAR IT, fail/error/skip0;
+70 Java files đúng formatter, 5 Node tests PASS và browser320/375/768/1440 PASS.
+Hoàn tất 08/10/2026 12:09:26 +07:00; output ở Local Temp/ticketscenter-m0-handoff-20261008.
 WAR SHA-256: FC217BBFBDF2D35053F9D3AB3830E9D3A5E4DB20A390B8EA7F00D83F25D1B3CE.
 [M0 audit/từng task](../evidence/khanh/M0-AUDIT.md) giữ chi tiết và các phần DEFERRED.
 
-CI từ develop hiện gọi FeaturePackageStructureTest và Day06IT/07IT/08IT/09IT/11IT;
-các test đó chưa tồn tại trong bản ghép này. SQL env/name cũng khác hợp đồng TC_TEST_DATABASE.
+CI từ develop yêu cầu FeaturePackageStructureTest; đã bổ sung 3 kiểm tra thực về
+package/Jakarta, boundary Model và uniqueness của Servlet mappings, tất cả PASS.
+CI SQL còn gọi Day06IT/07IT/08IT/09IT/11IT chưa tồn tại trong bản ghép này.
+SQL env/name cũng khác hợp đồng TC_TEST_DATABASE.
 Không sửa CI của thành viên khác hoặc làm integration skip để báo xanh. Vương cần nối
 manifest/fixture/principal/test targets thật; trạng thái GitHub CI phải đọc từ run thực tế.
