@@ -1,71 +1,94 @@
-# Backend implementation decisions — TicketsCenter
+# Backend decisions
 
-All decisions recorded here after compatibility spike. These lock the versions and choices
-that all five members must use. No member may upgrade a dependency unilaterally.
+Updated 2026-10-08 for the Khánh M0 review. Validation details are in
+[the M0 audit](../evidence/khanh/M0-AUDIT.md). Database and Đông integration are
+deferred at the user's request; the entries below do not certify those integrations.
 
-## DECISION-001 — Java version
+## Runtime and build
 
-**Decision:** Use JDK 25. Maven compiler release=25. `--enable-preview` enabled for record patterns.
+JDK 25, compiler release 25, UTF-8, WAR final name `ticketscenter`. Preview features
+are unnecessary. Verified locally with Oracle JDK 25.0.4.1 and Maven 3.10.0.
 
-**Rationale:** Spec targets JDK 25; all members use JDK 25.
+| Component | Locked version |
+|---|---|
+| Tomcat / embedded container test | 11.0.25 |
+| Servlet / JSP API, provided | 6.1.0 / 4.0.0 |
+| JSTL API / GlassFish implementation | 3.0.1 / 3.0.1 |
+| Hibernate ORM / Jakarta Persistence | 6.6.40.Final / 3.1.0 |
+| SQL Server JDBC | 12.8.1.jre11 |
+| HikariCP | 6.2.1 |
+| Jackson / Java time | 2.18.1 |
+| SLF4J API / JUL binding | 2.0.16 |
+| Jakarta Mail / Angus | 2.1.3 / 2.0.3 |
+| JUnit / Mockito | 5.11.3 / 5.20.0 |
+| Bootstrap WebJar | 5.3.0, matches the checked-in prototype |
+| Spotless / Google Java Format | 2.43.0 / 1.28.0 |
+| Compiler / WAR plugins | 3.13.0 / 3.4.0 |
+| Surefire / Failsafe | 3.5.2 / 3.5.2 |
+| Resources / Clean plugins | 3.3.1 / 3.5.0 |
 
-**Owner:** Khánh (KHANH-01)
-**Date:** 2026-10-07
+Hibernate 6.6 supports Java 25 starting with 6.6.40 and implements Persistence 3.1;
+the earlier 6.6.3 / Persistence 3.2 pairing was replaced.
+Source: [Hibernate compatibility table](https://hibernate.org/orm/releases/6.6/).
+SQL mapping compatibility still requires SQL Server validation.
 
-## DECISION-002 — Dependency versions (locked after KHANH-01 spike)
+Bootstrap is served locally from its WebJar. Shared CSS uses the prototype's
+white/red/black palette; no external font or script provider is needed.
 
-| Component | Version | Notes |
-|---|---|---|
-| Servlet API | 6.1.0 | Provided by Tomcat 11.0.25 |
-| JSP API | 4.0.0 | Provided by Tomcat 11.0.25 |
-| JSTL API | 3.0.1 | Bundled in WAR |
-| JSTL Impl (GlassFish) | 3.0.1 | Bundled in WAR |
-| Hibernate ORM | 6.6.3.Final | Tested with JDK 24 + SQL Server |
-| Jakarta Persistence API | 3.2.0 | |
-| MS SQL Server JDBC | 12.8.1.jre11 | Tested against SQL Server 2022 |
-| HikariCP | 6.2.1 | Max pool=5 connections per PrincipalKind |
-| Jackson | 2.18.1 | JavaTimeModule + no timestamps |
-| Jakarta Mail API | 2.1.3 | |
-| Angus Mail | 2.0.3 | Eclipse implementation |
-| JUnit Jupiter | 5.11.3 | |
-| Mockito | 5.14.2 | |
+## JSON and identity
 
-## DECISION-003 — Money representation
+Money and rates use BigDecimal. The shared serializer emits plain decimal strings
+without implicit rounding. Money input is canonical `0` or an unsigned nonzero
+integer of at most 19 digits; fractional rates are validated by their owning domain.
+Instants are ISO-8601 UTC. Nullable DTO fields are preserved; `data:null` is valid.
 
-All monetary values use `java.math.BigDecimal` (scale 0 for VND, scale per domain for rates).
-JSON serializes money as a string of digits (e.g., `"200000"`, `"0"`). Never use double/float.
-SQL type: `decimal(19,0)` for VND amounts; `decimal(19,6)` for rates.
+Username is trimmed and lowercased with Locale.ROOT, ASCII `[a-z0-9_]{3,32}`.
+Email is trimmed/lowercased without provider-specific rewrites. Full name is NFC,
+1–120 characters. Phone is nullable, at most 20 characters, with digits, optional
+leading +, spaces, parentheses and hyphens. Passwords are not normalized.
+No hashing implementation is claimed complete before KHANH-05.
 
-## DECISION-004 — JSON configuration
+`0010_identity.sql` is preserved. New validation constraints and explicit normalized
+column collation are supplied through `0011_identity_validation.sql`, to be registered
+in Vương's manifest before use.
 
-Jackson ObjectMapper:
-- JavaTimeModule registered, WRITE_DATES_AS_TIMESTAMPS disabled
-- Instants serialize as ISO-8601 UTC strings
-- NON_NULL inclusion (null fields omitted)
-- BigDecimal serialized as string via custom serializer (KHANH-02)
+## Session and request foundation
 
-## DECISION-005 — Session and CSRF
+Cookie sessions only, HttpOnly, SameSite=Lax; Secure for HTTPS/production. Lax allows
+the top-level VNPAY Return navigation. Session timeout is validated at startup.
+CSRF tokens are random, session-bound and compared in constant time. M1 login/reset
+must rotate both session identity and CSRF.
 
-- Servlet container session (HttpSession) with cookie-based tracking only
-- CSRF token: SecureRandom, stored in session, compared constant-time
-- Session cookie: HttpOnly=true, SameSite=Strict
-- Session rotated on login and after reset grant is consumed
+No forwarded IP is trusted. Identity JSON is capped at 64 KiB, nesting 32 and strings
+16 KiB; duplicate keys and caller-supplied identity/permission fields are rejected.
+AuthRateLimiter is a bounded single-process component; M1 must wire the documented
+account/source thresholds into the actual login/OTP flows.
 
-## DECISION-006 — Password hashing
+## Transaction and pool proposal
 
-BCrypt via jBCrypt library (to be confirmed by KHANH-05 after cost/timing test).
-Salt generated per-password, algorithm version embedded in encoded string.
-Minimum cost factor 12. Login timeout must be verified under load.
+One Hikari pool, maximum five connections total. A limited broker impersonates the
+database user assigned to a server-selected PrincipalKind. That user must exist;
+roles are not valid EXECUTE AS targets. No permission fallback exists.
 
-## DECISION-007 — Database connection pool
+The broker must have narrow IMPERSONATE permissions for those users and schema
+metadata access needed for validation. It must not be sysadmin/db_owner. This proposal
+requires Vương's review and real grant/DENY tests before integration is accepted.
 
-HikariCP single pool shared across all principals. Pool size TC_DB_POOL_SIZE (default 5)
-shared — NOT 5 per principal. SESSION_CONTEXT set at connection borrow, cleared on return.
-Connections not reused with stale actor context.
+A Hibernate session uses the borrowed JDBC connection for the whole resource-local
+transaction. Nested calls join only if principal and actor match. Caught nested
+failures still mark rollback-only. Cleanup reverts execution context and clears actor
+session context; failures evict the connection.
+Reference: [SQL Server EXECUTE AS / REVERT cookies](https://learn.microsoft.com/en-us/sql/t-sql/statements/revert-transact-sql).
 
-## DECISION-008 — Test profiles
+JPA schema validation is lazy on the first transaction. Startup initializes a lazy
+pool so liveness remains available during DB outages; readiness probes only connection
+availability and does not certify schema correctness.
 
-- `mvn -B verify` — unit tests only (*Test), no DB required
-- `mvn -B -Psqlserver-it verify` — SQL Server integration (*IT, acceptance/), requires TC_SQL_HOST + TC_TEST_DATABASE
-- `mvn -B -Pbrowser-it verify` — browser E2E (*IT, browser/), tooling by Vương (VUONG-01)
-- sqlserver-it profile MUST FAIL when DB env vars are missing, not silently skip
+## Checks
+
+- Default `verify`: unit tests, WAR and formatter check.
+- `http-it`: packaged WAR on Tomcat 11, with an explicitly unavailable SQL endpoint.
+- `sqlserver-it`: real SQL/HTTP integration; missing configuration fails, with no conditional skips.
+- `browser-it`: reserved for Vương; shared-frame browser smoke is available through
+  `http-it` with an explicitly configured Node/Playwright/browser runtime.
+- `tc.build.directory`: optional output override for OneDrive locks; default remains `target`.

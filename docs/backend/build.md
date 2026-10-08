@@ -1,60 +1,84 @@
-# Build and run guide — TicketsCenter
+# Build and run
 
-## Prerequisites
+## Requirements
 
-- JDK 24+ (target 25 per spec; using 24 locally — see decisions.md DECISION-001)
-- Apache Maven 3.10+
-- Tomcat 11.0.25 (for local deploy)
-- SQL Server (local or Azure SQL) — only required for integration tests
-- Environment variables — copy `.env.example` to `.env` and fill in values
+JDK 25, Maven 3.10+, Tomcat 11.0.25. Set JAVA_HOME to JDK 25; JDK 24 cannot compile
+release 25. Export variables from `.env.example` in the application launcher.
+Copying the file alone does not load it.
 
-## Build
-
-```bash
-# Unit tests + WAR (no DB required)
+```powershell
 mvn -B verify
-
-# Output WAR at:
 # target/ticketscenter.war
+mvn -B spotless:apply
 ```
 
-## Integration tests (SQL Server required)
+`verify` includes the Java formatter check and fails if no unit tests exist.
 
-Set environment variables:
-```bash
-$env:TC_SQL_HOST = "localhost\SQLEXPRESS"
-$env:TC_TEST_DATABASE = "ticketscenter_test"
-$env:TC_APP_BASE_URL = "http://localhost:8080/ticketscenter"
-$env:TC_OTP_HMAC_SECRET = "<your-secret>"
-# ... other vars from .env.example
+## Standalone WAR verification
+
+This profile deploys the packaged WAR twice to an embedded Tomcat 11.0.25 and
+checks health, CSRF, static assets, JSP escaping and pool shutdown. It does not prove
+SQL Server transactions, grants, browser behavior or the business flows of M1.
+
+```powershell
+$env:TC_APP_ENV = 'test'
+$env:TC_SQL_HOST = '127.0.0.1'
+$env:TC_SQL_PORT = '1'
+$env:TC_DATABASE = 'ticketscenter_test'
+$env:TC_APP_BASE_URL = 'http://localhost:8080/ticketscenter'
+$env:TC_OTP_HMAC_SECRET = [Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
+mvn -B -Phttp-it verify
 ```
 
-Then run:
-```bash
+The unavailable SQL endpoint is deliberate: live must be 200, ready must be 503.
+
+To also check the shared frame in a real browser, provide an installed Node/Playwright
+runtime and browser executable. This smoke check does not configure Vương's browser-it
+profile or accept the M1 pages/membership flows:
+
+```powershell
+$env:TC_BROWSER_NODE = 'C:\path\to\node.exe'
+$env:TC_PLAYWRIGHT_MODULE = 'C:\path\to\node_modules\playwright'
+$env:TC_BROWSER_EXECUTABLE = 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe'
+$env:TC_BROWSER_EVIDENCE_DIR = Join-Path $PWD 'docs/evidence/khanh/layout'
+mvn -B -Phttp-it verify
+& $env:TC_BROWSER_NODE --test src/test/js/shared-client.test.cjs
+```
+
+The browser script runs while the test-only layout route is available. Browser failure
+fails http-it; no browser runtime is downloaded by Maven or bundled into the WAR.
+
+On this OneDrive workspace, `clean` cannot remove the old `target/classes/META-INF`
+directory. Use an isolated output directory instead of suppressing clean failures:
+
+```powershell
+$taskBuildPath = Join-Path ([IO.Path]::GetTempPath()) 'ticketscenter-m0-build'
+mvn -B -Phttp-it "-Dtc.build.directory=$taskBuildPath" clean verify
+```
+
+## SQL Server integration
+
+Set TC_SQL_HOST, TC_TEST_DATABASE ending in `_test`, TC_APP_BASE_URL and the remaining
+application variables. Apply migrations through Vương's manifest; add 0011 after
+0010. Load Vương's fixture registry and principals, then prepare the test-only SP
+using `database/tests/khanh/KHANH-03.sql`.
+
+```powershell
+sqlcmd -S "$env:TC_SQL_HOST" -d "$env:TC_TEST_DATABASE" -E -b -i database/tests/khanh/KHANH-03.sql
+sqlcmd -S "$env:TC_SQL_HOST" -d "$env:TC_TEST_DATABASE" -E -b -i database/tests/khanh/KHANH-04.sql
 mvn -B -Psqlserver-it verify
-
-# Run single IT class:
-mvn -B -Psqlserver-it -Dit.test=KhanhHealthIT verify
 ```
 
-## Deploy to Tomcat
+SQL auth for sqlcmd uses `-U` with SQLCMDPASSWORD from the environment. JDBC uses
+TC_DB_USER / TC_DB_PASSWORD for the reviewed broker. Windows JDBC integrated auth
+requires the Microsoft driver's matching native authentication DLL on java.library.path;
+a working `sqlcmd -E` does not itself configure JDBC authentication.
 
-1. Copy `target/ticketscenter.war` to `$CATALINA_HOME/webapps/`
-2. Set environment variables on Tomcat (via setenv.sh/setenv.bat or container config)
-3. Start Tomcat — app is at `/ticketscenter`
-4. Health check: GET http://localhost:8080/ticketscenter/health/live
+## Deploy
 
-## SQL migrations
+Copy the WAR to Tomcat webapps, export configuration in setenv.bat/the service launcher
+and start Tomcat. Test `/ticketscenter/health/live` and `/health/ready`.
+Readiness reports UP only for a successful bounded SQL connection probe.
 
-Run with sqlcmd (Windows Integrated Auth):
-```powershell
-sqlcmd -S "$env:TC_SQL_HOST" -d "$env:TC_TEST_DATABASE" -E -b -i database/migrations/0010_identity.sql
-```
-
-With SQL auth (password from environment, NOT -P flag):
-```powershell
-$env:SQLCMDPASSWORD = "<password>"
-sqlcmd -S "$env:TC_SQL_HOST" -d "$env:TC_TEST_DATABASE" -U "$env:TC_TEST_LOGIN" -b -i database/migrations/0010_identity.sql
-```
-
-**NEVER** put the password in -P or print it to console.
+M0 currently exposes CSRF and health. Account mutations and personal pages return
+NOT_IMPLEMENTED until the M1/integration tasks are supplied.

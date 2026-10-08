@@ -1,14 +1,12 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" isErrorPage="true" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lỗi — TicketsCenter</title>
-</head>
-<body>
-    <h1>Đã xảy ra lỗi</h1>
-    <p>Vui lòng thử lại sau. Nếu lỗi tiếp tục, hãy liên hệ hỗ trợ.</p>
-</body>
-</html>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isErrorPage="true" %>
+<%@ include file="../layout/header.jspf" %>
+<%@ include file="../layout/notifications.jspf" %>
+<section class="card error-panel" aria-labelledby="error-title">
+    <h1 id="error-title">Không thể hoàn tất yêu cầu</h1>
+    <p><c:out value="${error.message}" default="Vui lòng thử lại sau."/></p>
+    <c:if test="${not empty error.correlationId}">
+        <p class="muted">Mã tra cứu: <c:out value="${error.correlationId}"/></p>
+    </c:if>
+    <a class="button" href="<c:url value='/events'/>">Về danh sách sự kiện</a>
+</section>
+<%@ include file="../layout/footer.jspf" %>

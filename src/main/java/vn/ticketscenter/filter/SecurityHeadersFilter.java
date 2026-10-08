@@ -1,32 +1,28 @@
 package vn.ticketscenter.filter;
 
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.IOException;
 
-/**
- * Adds security headers to every response.
- * Owner: Khánh (KHANH-07)
- */
-public class SecurityHeadersFilter implements Filter {
-
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
-
-        HttpServletResponse resp = (HttpServletResponse) response;
-        resp.setHeader("X-Content-Type-Options", "nosniff");
-        resp.setHeader("X-Frame-Options", "DENY");
-        resp.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
-        // CSP set loosely for now; tighten in KHANH-07 after asset paths are known
-        resp.setHeader("Content-Security-Policy",
-                "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'");
-
-        chain.doFilter(request, response);
-    }
+public final class SecurityHeadersFilter implements Filter {
+  @Override
+  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+      throws IOException, ServletException {
+    var req = (HttpServletRequest) request;
+    var resp = (HttpServletResponse) response;
+    resp.setHeader("X-Content-Type-Options", "nosniff");
+    resp.setHeader("X-Frame-Options", "DENY");
+    resp.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+    resp.setHeader(
+        "Content-Security-Policy",
+        "default-src 'self'; script-src 'self'; style-src 'self'; "
+            + "img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
+    if (req.isSecure()) resp.setHeader("Strict-Transport-Security", "max-age=31536000");
+    String path = req.getRequestURI().substring(req.getContextPath().length());
+    if (path.equals("/auth")
+        || path.startsWith("/auth/")
+        || path.equals("/me")
+        || path.startsWith("/me/")) resp.setHeader("Cache-Control", "no-store");
+    chain.doFilter(request, response);
+  }
 }

@@ -1,2 +1,6 @@
 package vn.ticketscenter.dto.common;
-public enum ActorType { USER, SYSTEM }
+
+public enum ActorType {
+  USER,
+  SYSTEM
+}

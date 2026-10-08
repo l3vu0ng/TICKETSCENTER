@@ -1,4 +1,8 @@
 package vn.ticketscenter.config;
+
 import java.time.Instant;
-/** Provides current UTC time. HTTP MUST NOT provide 'now'. Owner: Khánh (KHANH-02) */
-public interface ClockProvider { Instant now(); }
+
+/** Server clock shared by services and deterministic tests. */
+public interface ClockProvider {
+  Instant now();
+}

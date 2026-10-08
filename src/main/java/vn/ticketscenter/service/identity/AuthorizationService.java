@@ -1,48 +1,66 @@
 package vn.ticketscenter.service.identity;
 
 import jakarta.persistence.EntityManager;
-import vn.ticketscenter.dto.common.ActorContext;
-import vn.ticketscenter.exception.BusinessException;
-import vn.ticketscenter.model.identity.OrganizationRole;
-
 import java.util.Set;
 import java.util.UUID;
+import vn.ticketscenter.dto.common.ActorContext;
+import vn.ticketscenter.dto.common.ActorType;
+import vn.ticketscenter.exception.BusinessException;
+import vn.ticketscenter.model.identity.OrganizationRole;
+import vn.ticketscenter.model.identity.PlatformRole;
+import vn.ticketscenter.model.identity.UserStatus;
+import vn.ticketscenter.repository.identity.UserRepository;
+import vn.ticketscenter.transaction.TransactionContext;
 
-/**
- * Checks authorization based on current DB state.
- * Reads live membership from DB — not from session.
- * BLOCKED: Full implementation in KHANH-06 / DONG-01 (MembershipAuthorizationRepository).
- * Owner: Khánh (KHANH-06)
- */
-public class AuthorizationService {
+/** Guards use the current transaction; membership decisions belong to Đông. */
+public final class AuthorizationService {
+  @FunctionalInterface
+  public interface MembershipGuard {
+    boolean allows(
+        EntityManager em, UUID userId, UUID organizationId, Set<OrganizationRole> allowed);
+  }
 
-    private static final AuthorizationService INSTANCE = new AuthorizationService();
-    private AuthorizationService() {}
-    public static AuthorizationService getInstance() { return INSTANCE; }
+  private final UserRepository users;
+  private final MembershipGuard memberships;
 
-    /**
-     * Throws BusinessException(403) if actor does not have ADMIN platform role.
-     */
-    public void requireAdmin(ActorContext actor) {
-        if (!actor.isAdmin()) {
-            throw BusinessException.forbidden("Admin role required.");
-        }
+  public AuthorizationService(UserRepository users, MembershipGuard memberships) {
+    this.users = users;
+    this.memberships = memberships;
+  }
+
+  private void requireCurrent(ActorContext actor) {
+    if (!java.util.Objects.equals(actor, TransactionContext.actor())) {
+      throw BusinessException.forbidden("Actor does not match the current transaction");
     }
+    if (actor == null || actor.type() != ActorType.USER)
+      throw BusinessException.forbidden("User actor required");
+    var current =
+        users
+            .findById(TransactionContext.entityManager(), actor.actorId())
+            .orElseThrow(() -> BusinessException.forbidden("Access denied"));
+    if (current.getStatus() != UserStatus.ACTIVE
+        || current.getAuthVersion() != actor.authVersion()
+        || current.getPlatformRole() != actor.platformRole())
+      throw BusinessException.forbidden("Access denied");
+  }
 
-    /**
-     * Throws BusinessException(403) if actor does not hold one of the allowed
-     * OrganizationRoles in the given organization, OR organization is not APPROVED.
-     * Reads membership from DB using EntityManager of the current transaction.
-     *
-     * BLOCKED KHANH-06/DONG-01: MembershipAuthorizationRepository not yet available.
-     */
-    public void requireOrganizationRole(
-            ActorContext actor,
-            UUID organizationId,
-            Set<OrganizationRole> allowed,
-            EntityManager em) {
-        // TODO KHANH-06: call MembershipAuthorizationRepository.findCurrent(em, actorId, orgId)
-        throw BusinessException.forbidden(
-                "Organization role check not yet implemented. Task: KHANH-06/DONG-01.");
-    }
+  public void requireAdmin(ActorContext actor) {
+    requireCurrent(actor);
+    if (actor.platformRole() != PlatformRole.ADMIN)
+      throw BusinessException.forbidden("Admin role required");
+  }
+
+  public void requireOrganizationRole(
+      ActorContext actor, UUID organizationId, Set<OrganizationRole> allowed) {
+    requireCurrent(actor);
+    if (organizationId == null
+        || allowed == null
+        || allowed.isEmpty()
+        || memberships == null
+        || !memberships.allows(
+            TransactionContext.entityManager(),
+            actor.actorId(),
+            organizationId,
+            Set.copyOf(allowed))) throw BusinessException.forbidden("Organization role required");
+  }
 }

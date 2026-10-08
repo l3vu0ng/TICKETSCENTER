@@ -1,31 +1,44 @@
 package vn.ticketscenter.service.identity;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.UUID;
 import vn.ticketscenter.dto.common.ActorContext;
 import vn.ticketscenter.exception.BusinessException;
+import vn.ticketscenter.model.identity.UserStatus;
+import vn.ticketscenter.repository.identity.UserRepository;
+import vn.ticketscenter.transaction.PrincipalKind;
+import vn.ticketscenter.transaction.TransactionRunner;
 
-/**
- * Verifies session and returns a DB-backed ActorContext.
- * BLOCKED: Full implementation in KHANH-06.
- * Skeleton provided for compile-time contract satisfaction.
- * Owner: Khánh (KHANH-06)
- */
-public class AuthService {
+/** Revalidates account status and authVersion on every authenticated request. */
+public final class AuthService {
+  private final TransactionRunner transactions;
+  private final UserRepository users;
 
-    private static final AuthService INSTANCE = new AuthService();
-    private AuthService() {}
-    public static AuthService getInstance() { return INSTANCE; }
+  public AuthService(TransactionRunner transactions, UserRepository users) {
+    this.transactions = transactions;
+    this.users = users;
+  }
 
-    /**
-     * Returns ActorContext for the current session.
-     * Verifies User ACTIVE and authVersion match DB state.
-     * Throws BusinessException(401) if session is missing or stale.
-     *
-     * BLOCKED KHANH-06: implementation pending session/DB infrastructure.
-     */
-    public ActorContext requireCurrentUser(HttpServletRequest request) {
-        // TODO KHANH-06
-        throw BusinessException.unauthorized(
-                "Authentication not yet implemented. Task: KHANH-06.");
-    }
+  public ActorContext requireCurrentUser(HttpServletRequest request) {
+    var session = request.getSession(false);
+    if (session == null
+        || !(session.getAttribute("userId") instanceof UUID id)
+        || !(session.getAttribute("authVersion") instanceof Integer version))
+      throw BusinessException.unauthorized("Session is missing or expired");
+    return transactions.required(
+        PrincipalKind.AUTH_TECH,
+        ActorContext.system(),
+        em -> {
+          var user =
+              users
+                  .findById(em, id)
+                  .orElseThrow(
+                      () -> BusinessException.unauthorized("Session is missing or expired"));
+          if (user.getStatus() != UserStatus.ACTIVE || user.getAuthVersion() != version) {
+            session.invalidate();
+            throw BusinessException.unauthorized("Session is missing or expired");
+          }
+          return ActorContext.ofUser(id, user.getPlatformRole(), version, user.isEmailVerified());
+        });
+  }
 }
