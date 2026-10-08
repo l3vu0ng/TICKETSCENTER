@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [ValidateSet('Full', 'FinancialFoundation')][string]$Scope = 'Full',
+    [ValidateSet('Full', 'FinancialFoundation', 'IdentityFinancialFoundation')][string]$Scope = 'Full',
     [string]$Server = $env:TC_SQL_HOST,
     [string]$Database = $env:TC_TEST_DATABASE,
     [ValidateSet('Integrated', 'SqlLogin')][string]$Authentication = 'Integrated',
@@ -38,14 +38,16 @@ foreach ($entry in $entries) {
     $previous = $entry.file
 }
 $required = if ($Scope -eq 'Full') {
-    @('0010_identity.sql','0020_organizations_events.sql','0030_sales.sql','0040_refunds_checkin.sql',
+    @('0010_identity.sql','0011_identity_validation.sql','0020_organizations_events.sql','0030_sales.sql','0040_refunds_checkin.sql',
       '0050_settlements_audit.sql','0100_cross_domain_keys.sql','0700_roles_grants.sql')
+} elseif ($Scope -eq 'IdentityFinancialFoundation') {
+    @('0010_identity.sql','0011_identity_validation.sql','0050_settlements_audit.sql')
 } else { @('0050_settlements_audit.sql') }
 foreach ($file in $required) {
     if (-not $seen.ContainsKey($file)) { throw "Missing required migration: $file (scope $Scope)" }
 }
-if ($Scope -eq 'FinancialFoundation') {
-    $entries = @($entries | Where-Object { $_.file -eq '0050_settlements_audit.sql' })
+if ($Scope -ne 'Full') {
+    $entries = @($entries | Where-Object { $_.file -in $required })
 }
 if ($PreflightOnly) { Write-Output "PREFLIGHT PASS ($Scope); no SQL connection or integration claimed."; exit 0 }
 if ([string]::IsNullOrWhiteSpace($Server) -or [string]::IsNullOrWhiteSpace($Database)) {

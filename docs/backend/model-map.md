@@ -1,5 +1,10 @@
 # Financial model/schema map — VUONG-01/02
 
+Cập nhật routine main `90800f7`: nền Khánh `7b403f2` đã nhận và schema
+0010/0011 đã vào manifest. 106 unit và migration identity/tài chính đạt khi
+kiểm riêng; Organization/Event thực, 0020/0030/0040 và JPA TCP vẫn thiếu.
+Số 62 unit và nhận xét chưa nhận identity ở dưới là kết quả lịch sử.
+
 Hợp đồng `04336c2`, XML diagram hiện hành; cập nhật M0 ngày08/10/2026 sau VUONG-01 `a4a37a3`. Chỉ CommissionRule và Settlement là lớp nghiệp vụ Vương. Hai entity đã có tham chiếu có kiểu Organization/Event; không dùng UUID/Object thay thế quan hệ. Organization/Event thực phải do Đông cung cấp. Checkout kiểm độc lập chỉ dùng shell tạm để biên dịch, không commit shell hoặc tạo bảng owner. PERSISTED computed SQL vẫn là giá trị dẫn xuất, không field mutable của Model/JPA.
 
 | Diagram/technical data | Schema 0050 đã có | Java/hành vi và gate còn thiếu |

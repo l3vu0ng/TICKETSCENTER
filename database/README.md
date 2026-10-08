@@ -1,10 +1,11 @@
 # Migration registry — Vương / VUONG-02
 
-Manifest thực thi ở `migrations/manifest.csv`. Chỉ đăng ký file đã giao với checksum thật; không tạo dòng SHA giả cho schema thiếu. Hiện chỉ 0050 được đăng ký và kiểm độc lập. Nền 0010 của Khánh có trên feature `1edbced`, chưa vào develop; 0020/0030/0040 chưa có. 0100 chỉ tạo sau khi các chủ miền chốt PK/cột. Vì vậy scope Full bắt buộc fail trước kết nối; không coi FinancialFoundation là fresh install toàn hệ thống.
+Manifest thực thi ở `migrations/manifest.csv`. Chỉ đăng ký file đã giao với checksum thật; không tạo dòng SHA giả cho schema thiếu. Đã nhận 0010/0011 của Khánh từ foundation `7b403f2` và đăng ký cùng 0050. `IdentityFinancialFoundation` cài ba migration này; `FinancialFoundation` chỉ cài 0050. 0020/0030/0040 chưa có. 0100 chỉ tạo sau khi các chủ miền chốt PK/cột. Vì vậy scope Full bắt buộc fail trước kết nối; các scope nền không phải fresh install toàn hệ thống.
 
 | Migration cần nhận | Owner | Trạng thái |
 |---|---|---|
-| 0010_identity.sql | Khánh | Feature đã có; chờ tích hợp/review/checksum vào manifest |
+| 0010_identity.sql | Khánh | Đã nhận; checksum và owner trong manifest; review tích hợp còn chờ |
+| 0011_identity_validation.sql | Khánh | Đã nhận; dependency 0010 và checksum trong manifest |
 | 0020_organizations_events.sql | Đông | Chưa giao |
 | 0030_sales.sql | Liêm | Chưa giao |
 | 0040_refunds_checkin.sql | Thái | Chưa giao |

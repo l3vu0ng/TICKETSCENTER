@@ -1,5 +1,33 @@
 # VUONG-02 — manifest/fixture/runbook, phần nền
 
+## Cập nhật theo routine main 90800f7 (08/10/2026)
+
+Nhánh `feature/vuong/vuong-02-migration-manifest-part-3` nhận VUONG-01
+`62eeee4` và foundation Khánh `7b403f2`. Routine nay đúng task ID: 0100
+thuộc VUONG-02. Đã đăng ký **file thật** 0010/0011 của Khánh, checksum
+UTF8/LF, owner KHANH, dependency 0011 → 0010; không sửa SQL của Khánh.
+Scope mới `IdentityFinancialFoundation` chỉ cài 0010/0011/0050;
+Full vẫn chặn 0020/0030/0040/0100 còn thiếu.
+
+Kiểm mới: test guard viết trước scope mới RED (ValidateSet từ chối);
+sau triển khai **10 preflight/guard cases PASS**, gồm bỏ từng identity
+migration, checksum drift, dependency, traversal, DB demo và thiếu environment.
+Trên database SQL Server 17.0.1135.8 rỗng, riêng, tên ngẫu nhiên:
+`mvn -B -Psqlserver-it -Dit.test=VuongMigrationIT clean verify` đạt
+**106 unit + 1 SQL IT, 0 failure/error/skipped**, formatter và WAR đạt.
+IT cài/rerun migration, kiểm history identity/checksum/owner, ba bảng,
+năm trusted constraints, binary collation, sáu bảng tài chính và 20 negative
+constraint cases tài chính. Test không để business rows; DB được drop và
+kiểm master xác nhận cleanup. JDK25/Maven3.9.16; checkout kiểm chỉ có hai
+Organization/Event reference tạm, không commit và không nghiệm thu owner bằng chúng.
+
+Log: [VUONG-02-refresh-validation.log](VUONG-02-refresh-validation.log).
+Seed/FK toàn miền và build trên Model thật vẫn BLOCKED; không tick đóng M0
+hoặc thay thế review bằng kết quả checkout riêng. Các mục lịch sử dưới đây
+không còn là trạng thái dependency/delivery hiện tại.
+
+---
+
 ## Cập nhật M0 ngày08/10/2026
 
 Nhánh `feature/vuong/vuong-02-migration-manifest-part-2` tiếp nối `efcdcbb`,

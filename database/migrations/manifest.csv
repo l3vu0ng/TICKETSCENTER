@@ -1,2 +1,4 @@
 file,sha256,owner,dependencies
+0010_identity.sql,7d88c32652756f43e355e60d318c264ccd7802dd40956ff9b564ab77ef6ddf7d,KHANH,
+0011_identity_validation.sql,81f4a5c82d50509dd4284ff88d408ab612ec8a0789d9a579dac1c6a37d76461d,KHANH,0010_identity.sql
 0050_settlements_audit.sql,fbeeb12fe9ee1b32610639d57d5ef2f15913096df361c9565dd2188d2098b4ae,VUONG,

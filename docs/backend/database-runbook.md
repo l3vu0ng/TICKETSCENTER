@@ -17,7 +17,7 @@ Expected: APPLIED lần đầu, UNCHANGED lần hai; history 1 dòng 0050; sáu 
 ```powershell
 pwsh -NoProfile -File database/migrate.ps1 -PreflightOnly
 pwsh -NoProfile -File database/tests/vuong/VUONG-02.ps1 -RepositoryRoot (Get-Location).Path
-# Full hiện phải fail vì thiếu 0010/0020/0030/0040/0100/0700 trong manifest.
+# Full hiện phải fail vì thiếu 0020/0030/0040/0100; 0700 đến từ task03.
 # PreflightOnly kiểm file/checksum/order, không chứng minh SQL integration.
 ```
 
@@ -34,3 +34,12 @@ mvn -B -Psqlserver-it -Dit.test=VuongMigrationIT verify
 VuongMigrationIT gọi runner hai lần và SQLtest01/02 bằng sqlcmd thật. Thiếu environment là failure, không skip. Khi bỏ TC_MIGRATION_SCOPE, scope Full được dùng và phải fail nếu thiếu miền. Không dùng Foundation PASS để tick VUONG-02 tổng hợp. Trên Windows test helper hiện kiểm Integrated authentication; kiểm JDBC/TransactionRunner/principal pool vẫn cần Khánh cung cấp.
 
 Sau khi nhận đủ schema: owner cung cấp file+checksum+cột/keys → đăng ký manifest dependency → 0100 ghép FK → chạy Full trên DB mới → seed từ registry qua builder owner → inventory → repeat/checksum drift/fault/outer TX → evidence SHA tích hợp. Order.acceptedPayment và Refund.currentAttempt cần SP kiểm đúng aggregate, FK đơn không đủ. Không có lệnh reset demo; cleanup DB test riêng theo tên đã kiểm bởi người tạo.
+
+Nền identity thật đã nhận từ Khánh `7b403f2`. Trên DB test **mới, rỗng**,
+chọn `-Scope IdentityFinancialFoundation` hoặc đặt
+`TC_MIGRATION_SCOPE=IdentityFinancialFoundation` cho `VuongMigrationIT`.
+Expected: APPLIED 0010/0011/0050 lần đầu, cả ba UNCHANGED lần hai;
+`database/tests/vuong/VUONG-02-identity.sql` kiểm owner/checksum/history,
+ba bảng identity, năm constraint được trust và binary normalization collation.
+Test này không seed người dùng hoặc nghiệm thu auth; không dùng schema identity
+để coi FK các miền Đông/Liêm/Thái đã có. Full vẫn chặn thiếu schema/0100.
