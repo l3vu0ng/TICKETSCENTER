@@ -47,3 +47,4 @@ build/
 .idea/
 !.idea/codeStyles/
 !.idea/copyright/
+.codegraph/
