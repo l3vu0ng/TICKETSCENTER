@@ -17,30 +17,32 @@ import java.util.regex.Pattern;
  */
 public class CorrelationIdFilter implements Filter {
 
-  public static final String HEADER = "X-Correlation-Id";
-  public static final String ATTR_CORRELATION_ID = "correlationId";
+    public static final String HEADER = "X-Correlation-Id";
+    public static final String ATTR_CORRELATION_ID = "correlationId";
 
-  private static final int MAX_LEN = 64;
-  private static final Pattern SAFE = Pattern.compile("[a-zA-Z0-9\\-_]{1,64}");
+    private static final int MAX_LEN = 64;
+    private static final Pattern SAFE = Pattern.compile("[a-zA-Z0-9\\-_]{1,64}");
 
-  @Override
-  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-      throws IOException, ServletException {
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
 
-    HttpServletRequest req = (HttpServletRequest) request;
-    HttpServletResponse resp = (HttpServletResponse) response;
+        HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletResponse resp = (HttpServletResponse) response;
 
-    String id = sanitize(req.getHeader(HEADER));
-    req.setAttribute(ATTR_CORRELATION_ID, id);
-    resp.setHeader(HEADER, id);
+        String id = sanitize(req.getHeader(HEADER));
+        req.setAttribute(ATTR_CORRELATION_ID, id);
+        resp.setHeader(HEADER, id);
 
-    chain.doFilter(request, response);
-  }
-
-  private static String sanitize(String candidate) {
-    if (candidate != null && candidate.length() <= MAX_LEN && SAFE.matcher(candidate).matches()) {
-      return candidate;
+        chain.doFilter(request, response);
     }
-    return UUID.randomUUID().toString();
-  }
+
+    private static String sanitize(String candidate) {
+        if (candidate != null
+                && candidate.length() <= MAX_LEN
+                && SAFE.matcher(candidate).matches()) {
+            return candidate;
+        }
+        return UUID.randomUUID().toString();
+    }
 }

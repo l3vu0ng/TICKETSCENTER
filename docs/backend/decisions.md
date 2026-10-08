@@ -27,6 +27,10 @@ are unnecessary. Verified locally with Oracle JDK 25.0.4.1 and Maven 3.10.0.
 | Surefire / Failsafe | 3.5.2 / 3.5.2 |
 | Resources / Clean plugins | 3.3.1 / 3.5.0 |
 
+The formatter uses AOSP (four-space Java indentation), matching TEAM-CONTRACT §5.1.
+Javadoc text is preserved. Configuration follows the
+[Spotless Maven documentation](https://github.com/diffplug/spotless/tree/main/plugin-maven#google-java-format).
+
 Hibernate 6.6 supports Java 25 starting with 6.6.40 and implements Persistence 3.1;
 the earlier 6.6.3 / Persistence 3.2 pairing was replaced.
 Source: [Hibernate compatibility table](https://hibernate.org/orm/releases/6.6/).

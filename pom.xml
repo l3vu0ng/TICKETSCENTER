@@ -179,7 +179,11 @@
                 <version>2.43.0</version>
                 <configuration>
                     <java>
-                        <googleJavaFormat><version>1.28.0</version></googleJavaFormat>
+                        <googleJavaFormat>
+                            <version>1.28.0</version>
+                            <style>AOSP</style>
+                            <formatJavadoc>false</formatJavadoc>
+                        </googleJavaFormat>
                         <removeUnusedImports/>
                     </java>
                 </configuration>

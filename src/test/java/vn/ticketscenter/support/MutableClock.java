@@ -10,33 +10,33 @@ import vn.ticketscenter.config.ClockProvider;
  */
 public class MutableClock implements ClockProvider {
 
-  /** Base test time per TEAM-CONTRACT §6 fixture registry. */
-  public static final Instant BASE_TIME = Instant.parse("2026-10-06T03:00:00Z");
+    /** Base test time per TEAM-CONTRACT §6 fixture registry. */
+    public static final Instant BASE_TIME = Instant.parse("2026-10-06T03:00:00Z");
 
-  private Instant current;
+    private Instant current;
 
-  public MutableClock() {
-    this.current = BASE_TIME;
-  }
+    public MutableClock() {
+        this.current = BASE_TIME;
+    }
 
-  public MutableClock(Instant initial) {
-    this.current = initial;
-  }
+    public MutableClock(Instant initial) {
+        this.current = initial;
+    }
 
-  @Override
-  public Instant now() {
-    return current;
-  }
+    @Override
+    public Instant now() {
+        return current;
+    }
 
-  public void set(Instant t) {
-    this.current = t;
-  }
+    public void set(Instant t) {
+        this.current = t;
+    }
 
-  public void advance(Duration d) {
-    this.current = current.plus(d);
-  }
+    public void advance(Duration d) {
+        this.current = current.plus(d);
+    }
 
-  public void rewind(Duration d) {
-    this.current = current.minus(d);
-  }
+    public void rewind(Duration d) {
+        this.current = current.minus(d);
+    }
 }

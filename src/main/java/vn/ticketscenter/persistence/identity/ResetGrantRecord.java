@@ -13,48 +13,48 @@ import org.hibernate.annotations.Nationalized;
 @Entity
 @Table(name = "ResetGrant", schema = "dbo")
 public class ResetGrantRecord {
-  @Id
-  @Column(columnDefinition = "uniqueidentifier")
-  private UUID id;
+    @Id
+    @Column(columnDefinition = "uniqueidentifier")
+    private UUID id;
 
-  @Column(nullable = false, columnDefinition = "uniqueidentifier")
-  private UUID userId;
+    @Column(nullable = false, columnDefinition = "uniqueidentifier")
+    private UUID userId;
 
-  @Nationalized
-  @Column(nullable = false, length = 255)
-  private String sessionBindingHash;
+    @Nationalized
+    @Column(nullable = false, length = 255)
+    private String sessionBindingHash;
 
-  @Column(nullable = false, columnDefinition = "datetime2")
-  private Instant createdAt;
+    @Column(nullable = false, columnDefinition = "datetime2")
+    private Instant createdAt;
 
-  @Column(nullable = false, columnDefinition = "datetime2")
-  private Instant expiresAt;
+    @Column(nullable = false, columnDefinition = "datetime2")
+    private Instant expiresAt;
 
-  @Column(columnDefinition = "datetime2")
-  private Instant consumedAt;
+    @Column(columnDefinition = "datetime2")
+    private Instant consumedAt;
 
-  protected ResetGrantRecord() {}
+    protected ResetGrantRecord() {}
 
-  public static ResetGrantRecord create(
-      UUID id, UUID userId, String bindingHash, Instant now, Instant expiresAt) {
-    if (bindingHash == null || bindingHash.isBlank() || bindingHash.length() > 255)
-      throw new IllegalArgumentException("Session binding hash required");
-    if (now == null || expiresAt == null || !expiresAt.isAfter(now))
-      throw new IllegalArgumentException("Invalid reset grant lifetime");
-    var result = new ResetGrantRecord();
-    result.id = Objects.requireNonNull(id);
-    result.userId = Objects.requireNonNull(userId);
-    result.sessionBindingHash = bindingHash;
-    result.createdAt = now;
-    result.expiresAt = expiresAt;
-    return result;
-  }
+    public static ResetGrantRecord create(
+            UUID id, UUID userId, String bindingHash, Instant now, Instant expiresAt) {
+        if (bindingHash == null || bindingHash.isBlank() || bindingHash.length() > 255)
+            throw new IllegalArgumentException("Session binding hash required");
+        if (now == null || expiresAt == null || !expiresAt.isAfter(now))
+            throw new IllegalArgumentException("Invalid reset grant lifetime");
+        var result = new ResetGrantRecord();
+        result.id = Objects.requireNonNull(id);
+        result.userId = Objects.requireNonNull(userId);
+        result.sessionBindingHash = bindingHash;
+        result.createdAt = now;
+        result.expiresAt = expiresAt;
+        return result;
+    }
 
-  public UUID getId() {
-    return id;
-  }
+    public UUID getId() {
+        return id;
+    }
 
-  public Instant getExpiresAt() {
-    return expiresAt;
-  }
+    public Instant getExpiresAt() {
+        return expiresAt;
+    }
 }

@@ -5,4 +5,4 @@ package vn.ticketscenter.dto.mail;
  * used for dedup where provider supports it.
  */
 public record MailMessage(
-    String to, String subject, String textBody, String htmlBody, String idempotencyKey) {}
+        String to, String subject, String textBody, String htmlBody, String idempotencyKey) {}

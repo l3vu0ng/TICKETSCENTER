@@ -5,10 +5,10 @@ package vn.ticketscenter.transaction;
  * (VUONG-03).
  */
 public enum PrincipalKind {
-  BUYER,
-  MANAGER,
-  CHECK_IN,
-  PLATFORM_ADMIN,
-  AUTH_TECH,
-  WORKER_TECH
+    BUYER,
+    MANAGER,
+    CHECK_IN,
+    PLATFORM_ADMIN,
+    AUTH_TECH,
+    WORKER_TECH
 }

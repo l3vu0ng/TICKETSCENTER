@@ -1,6 +1,6 @@
 # Khánh M0 — kiểm tra và sửa nền tảng
 
-Kiểm tra ngày 08/10/2026. **Phần độc lập đã được sửa và kiểm chứng; chưa đóng toàn bộ M0.**
+Kiểm tra lần đầu ngày 08/10/2026. **Phần độc lập đã được sửa và kiểm chứng; chưa đóng toàn bộ M0.**
 Người dùng yêu cầu tạm bỏ qua Organization/membership của Đông và SQL Server test.
 Các phần đó được ghi DEFERRED, không chuyển thành PASS.
 
@@ -63,3 +63,12 @@ Không lưu XML reports thô vì chúng chứa environment runtime.
 Vương xác nhận pool/principal USERS/broker hẹp, manifest0011, fixture registry và SQL Server _test.
 Sau đó sửa exact types/adapter, chạy fresh-schema validate, C01 race, SP rollback,
 actor reuse và nav revocation trên bản ghép develop. Chỉ đóng M0 khi các bằng chứng đó đạt.
+
+## Kiểm lại trước bàn giao GitHub
+
+Đã ghép develop `d2282d702445911e65d174a1e853273c4164bf96` vào nhánh Khánh, giữ nguyên
+enum fulfillment và CI của nhóm. Formatter chuyển AOSP 4-space theo TEAM-CONTRACT §5.1.
+Ngày 08/10/2026 12:04:06 +07:00, clean verify/http-it exit0: 59 unit + 1 WAR IT,
+fail/error/skip0; 69 Java files đúng formatter. Node5tests và browser4viewport PASS.
+Không đổi phần Đông/SQL DEFERRED. Hướng dẫn nối artifact và giới hạn CI ở
+[bàn giao M0](../../backend/khanh-m0-handoff.md).

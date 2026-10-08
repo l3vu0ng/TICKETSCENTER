@@ -8,9 +8,9 @@ import vn.ticketscenter.dto.mail.MailReceipt;
  * the test double.
  */
 public interface MailSender {
-  /**
-   * Send an email. May throw checked/unchecked exceptions on failure. Must NOT update Order/Refund
-   * state — only sends the message. Caller commits business state before calling send.
-   */
-  MailReceipt send(MailMessage message) throws Exception;
+    /**
+     * Send an email. May throw checked/unchecked exceptions on failure. Must NOT update Order/Refund
+     * state — only sends the message. Caller commits business state before calling send.
+     */
+    MailReceipt send(MailMessage message) throws Exception;
 }
