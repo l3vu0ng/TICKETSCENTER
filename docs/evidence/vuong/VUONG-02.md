@@ -1,5 +1,37 @@
 # VUONG-02 — manifest/fixture/runbook, phần nền
 
+## Cập nhật M0 ngày08/10/2026
+
+Nhánh `feature/vuong/vuong-02-migration-manifest-part-2` tiếp nối `efcdcbb`,
+nhận VUONG-01 `a4a37a3` bằng merge local có Task-Id. Đọc routine main `baa15e7`
+và hợp đồng gốc `04336c2`; 0100 thuộc VUONG-02 theo hợp đồng, không chuyển
+thành VUONG-04 như bảng routine. Model-map cập nhật hai entity có typed relation
+và bốn persistence mapping đã có, đánh dấu đúng compile riêng/runtime gate.
+
+Kiểm mới runner trong checkout tạm chứa chính file đã commit: bảy ca
+`pwsh -NoProfile -File database/tests/vuong/VUONG-02.ps1 -RepositoryRoot <checkout>`
+đều PASS (missing domains, foundation, checksum drift, demo DB, missing env,
+path traversal, missing declared dependency). Full preflight vẫn fail đúng
+`Missing required migration`, không báo thành công khi thiếu0010/0020/0030/0040/0100.
+
+Trong checkout nền Khánh `1edbced` + file Vương01/02/03, SQL Server localhost
+17.0.1135.8, scope **FinancialSecurityFoundation**: `VuongMigrationIT` chạy thật
+migration lần đầu/lặp lại, kiểm history và SQL01/02. Toàn bộ verify gồm62 unit
+và3 IT quyền/migration, failure/error/skipped=0. SQL01 có20 rejection đúng mã,
+test rows rollback về0. Database và login prefix riêng được dọn/kiểm master.
+Log mới ở [VUONG-01-m0-validation.log](VUONG-01-m0-validation.log), phần
+`sql-foundation-it.log`/`sql-foundation-validation.log`. Scope này có 0700 từ
+task03; không thay manifest task02 trước khi nhận dependency đó.
+
+**Chưa thể ghép 0100/seed toàn miền:** chưa có schema owner đủ/đã review trong
+develop. Khánh cần giao0010 vào develop, Đông0020, Liêm0030, Thái0040; chốt
+bảng/cột/PK thực, acceptedPaymentId/currentAttemptId và fixture registry.
+Không tự tạo bảng owner hoặc FK tới tên/cột chưa bàn giao để báo xanh.
+Full fresh-install M0 vẫn **BLOCKED**; chưa push/merge remote hoặc peer-review
+chấp thuận. Các đoạn sau là evidence ngày07, không thay kết quả mới này.
+
+---
+
 Ngày 07/10/2026. **PARTIAL**: runner/registry và schema tài chính đã kiểm, fresh-install toàn miền/FK/seed còn **BLOCKED**. Hợp đồng và develop `04336c2` không đổi. Nhánh local `feature/vuong/vuong-02-migration-manifest-part-1` tiếp nối dependency VUONG-01 `be8fabc` (cùng ancestry develop), không merge/cherry-pick nền Khánh. Chỉ được ghép vào develop khi dependency/review/checks tương ứng đạt. Revision kiểm là commit chứa evidence và các file này; SHA được ghi ở Issue #5 sau commit.
 
 ## File, caller và đầu ra
