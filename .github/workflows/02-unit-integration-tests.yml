@@ -89,19 +89,23 @@ jobs:
           echo "Tạo database TicketCenterticke trên SQL Server..."
           docker exec "$CONTAINER_ID" /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -C -Q "CREATE DATABASE TicketCenterticke;"
 
-          echo "Copy migrations vào container..."
-          docker cp database/migrations "$CONTAINER_ID":/tmp/migrations
+          if [ -d "database/migrations" ] && ls database/migrations/*.sql 1> /dev/null 2>&1; then
+            echo "Copy migrations vào container..."
+            docker cp database/migrations "$CONTAINER_ID":/tmp/migrations
 
-          echo "Áp dụng toàn bộ migrations theo thứ tự..."
-          for file in $(ls database/migrations/*.sql | sort); do
-            filename=$(basename "$file")
-            echo "Running migration: $filename"
-            docker exec "$CONTAINER_ID" /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -C -d TicketCenterticke -i "/tmp/migrations/$filename" || {
-              echo "::error::Lỗi khi chạy migration: $filename"
-              exit 1
-            }
-          done
-          echo "=> Áp dụng thành công toàn bộ migration vào SQL Server."
+            echo "Áp dụng toàn bộ migrations theo thứ tự..."
+            for file in $(ls database/migrations/*.sql | sort); do
+              filename=$(basename "$file")
+              echo "Running migration: $filename"
+              docker exec "$CONTAINER_ID" /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -C -d TicketCenterticke -i "/tmp/migrations/$filename" || {
+                echo "::error::Lỗi khi chạy migration: $filename"
+                exit 1
+              }
+            done
+            echo "=> Áp dụng thành công toàn bộ migration vào SQL Server."
+          else
+            echo "Chưa có thư mục hoặc file migration trong database/migrations. Bỏ qua bước nạp migration."
+          fi
 
       - name: Run SQL Server Integration Tests (Failsafe IT)
         env:

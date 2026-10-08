@@ -58,38 +58,33 @@ jobs:
     secrets: inherit
 
   # =========================================================================
-  # 4. Production Build & Docker Image Packaging
+  # Stages 4, 5, 6 (Docker packaging & Staging/Production Deployment)
+  # Sẽ được kích hoạt khi triển khai các workflow đóng gói và triển khai (VUONG-01)
   # =========================================================================
-  stage-4-build-and-packaging:
-    name: "Stage 4: Build & Packaging"
-    needs: stage-3-dependency-and-cve
-    uses: ./.github/workflows/04-build-docker-packaging.yml
-    secrets: inherit
+  # stage-4-build-and-packaging:
+  #   name: "Stage 4: Build & Packaging"
+  #   needs: stage-3-dependency-and-cve
+  #   uses: ./.github/workflows/04-build-docker-packaging.yml
+  #   secrets: inherit
 
-  # =========================================================================
-  # 5. Deploy to Staging + E2E / Smoke Test + DB Migration Test
-  # =========================================================================
-  stage-5-staging-and-smoke:
-    name: "Stage 5: Staging & Smoke"
-    needs: stage-4-build-and-packaging
-    uses: ./.github/workflows/05-deploy-staging-smoke-test.yml
-    secrets: inherit
+  # stage-5-staging-and-smoke:
+  #   name: "Stage 5: Staging & Smoke"
+  #   needs: stage-4-build-and-packaging
+  #   uses: ./.github/workflows/05-deploy-staging-smoke-test.yml
+  #   secrets: inherit
 
-  # =========================================================================
-  # 6. Manual Approval / Tag Release -> Deploy Prod (Canary / Blue-Green)
-  # =========================================================================
-  stage-6-production-deploy:
-    name: "Stage 6: Production Deployment"
-    needs: stage-5-staging-and-smoke
-    if: |
-      always() &&
-      needs.stage-5-staging-and-smoke.result == 'success' &&
-      (
-        github.ref == 'refs/heads/main' ||
-        startsWith(github.ref, 'refs/tags/v') ||
-        inputs.deploy_to_production == true
-      )
-    uses: ./.github/workflows/06-deploy-production.yml
-    with:
-      deployment_strategy: ${{ inputs.deployment_strategy || 'blue-green' }}
-    secrets: inherit
+  # stage-6-production-deploy:
+  #   name: "Stage 6: Production Deployment"
+  #   needs: stage-5-staging-and-smoke
+  #   if: |
+  #     always() &&
+  #     needs.stage-5-staging-and-smoke.result == 'success' &&
+  #     (
+  #       github.ref == 'refs/heads/main' ||
+  #       startsWith(github.ref, 'refs/tags/v') ||
+  #       inputs.deploy_to_production == true
+  #     )
+  #   uses: ./.github/workflows/06-deploy-production.yml
+  #   with:
+  #     deployment_strategy: ${{ inputs.deployment_strategy || 'blue-green' }}
+  #   secrets: inherit

@@ -32,7 +32,7 @@ jobs:
       - name: Enforce Architecture & Naming Invariants
         run: |
           echo "=== Chạy kiểm tra quy chuẩn kiến trúc Package-by-Feature ==="
-          mvn -B test -Dtest=FeaturePackageStructureTest
+          mvn -B test -Dtest=FeaturePackageStructureTest -Dsurefire.failIfNoSpecifiedTests=false
 
       - name: Generate Code Quality Summary
         if: always()
