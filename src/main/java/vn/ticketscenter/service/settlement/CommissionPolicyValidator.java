@@ -1,9 +1,8 @@
 package vn.ticketscenter.service.settlement;
 
+import java.math.BigDecimal;
 import vn.ticketscenter.dto.settlement.CommissionPolicyCommand;
 import vn.ticketscenter.exception.BusinessException;
-
-import java.math.BigDecimal;
 
 /** Validates terms before SP01 stores them in the organization approval transaction. */
 public final class CommissionPolicyValidator {
@@ -16,17 +15,25 @@ public final class CommissionPolicyValidator {
         }
         validateDecimal(command.ratePercent(), MAX_RATE, 6, "ratePercent");
         validateDecimal(command.fixedFee(), MAX_FEE, 0, "fixedFee");
-        if (command.effectiveFrom() == null || command.effectiveTo() == null
+        if (command.effectiveFrom() == null
+                || command.effectiveTo() == null
                 || !command.effectiveFrom().isBefore(command.effectiveTo())) {
             throw invalid("Khoảng hiệu lực phải có ngày bắt đầu trước ngày kết thúc.");
         }
     }
 
-    private static void validateDecimal(BigDecimal value, BigDecimal maximum, int scale, String field) {
+    private static void validateDecimal(
+            BigDecimal value, BigDecimal maximum, int scale, String field) {
         // Check magnitude first; never round caller values to make them fit SQL.
-        if (value == null || value.signum() < 0 || value.compareTo(maximum) > 0
+        if (value == null
+                || value.signum() < 0
+                || value.compareTo(maximum) > 0
                 || value.stripTrailingZeros().scale() > scale) {
-            throw invalid(field + " phải không âm và biểu diễn chính xác trong decimal(19," + scale + ").");
+            throw invalid(
+                    field
+                            + " phải không âm và biểu diễn chính xác trong decimal(19,"
+                            + scale
+                            + ").");
         }
     }
 

@@ -1,5 +1,29 @@
 # VUONG-01 — chính sách phí ban đầu, phần M0
 
+## Cập nhật theo routine main 90800f7 (08/10/2026)
+
+Nhánh `feature/vuong/vuong-01-finance-contracts-part-3` đã nhận foundation
+thật của Khánh `7b403f2` qua merge dependency. Routine hiện đã thống nhất
+0050 thuộc VUONG-01; các nhận xét về task ID sai bên dưới là lịch sử.
+Source tài chính được định dạng theo Spotless của foundation, không đổi hợp đồng.
+
+Kiểm mới với JDK25/Maven3.9.16 trên checkout riêng cùng source hiện tại:
+`mvn -B clean verify` đạt **106 unit, 0 failure/error/skipped**, WAR và
+formatter đạt. Chỉ checkout kiểm có hai class Organization/Event rỗng để
+biên dịch tham chiếu; không commit chúng, không kiểm nghiệp vụ owner bằng chúng.
+Trên nhánh thật, `mvn -B -DskipTests compile` vẫn lỗi vì thiếu hai Model
+Organization/Event của Đông; dependency Jakarta/Hibernate/shared types nay đã có.
+Đây là kiểm phần tài chính, không phải PASS build tích hợp hoặc nghiệm thu JPA SQL.
+
+VUONG-15 đã có browser smoke độc lập trên foundation thật ở
+[Draft PR #9](https://github.com/l3vu0ng/TICKETSCENTER/pull/9): 59 unit +
+1 browser IT trên WAR Tomcat thực, không thay thế E2E nghiệp vụ tài chính.
+Schema 0010/0011 của Khánh nay đã nhận; 0020/0030/0040, FK liên miền/seed đầy đủ,
+JPA roundtrip qua TCP và peer review vẫn là gate còn thiếu. Không merge develop/main.
+Phần này thay thế trạng thái dependency, task ID và delivery trong các mục lịch sử.
+
+---
+
 ## Cập nhật M0 ngày 08/10/2026 — Model và hợp đồng tài chính
 
 Nhánh `feature/vuong/vuong-01-finance-contracts-part-2`, tiếp nối `be8fabc`;
