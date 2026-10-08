@@ -60,17 +60,22 @@ mvn -B -Phttp-it "-Dtc.build.directory=$taskBuildPath" clean verify
 
 Set TC_SQL_HOST, TC_TEST_DATABASE ending in `_test`, TC_APP_BASE_URL and the remaining
 application variables. Apply migrations through Vương's manifest; add 0011 after
-0010. Load Vương's fixture registry and principals, then prepare the test-only SP
+0010, followed by 0012 to repair OTP indexes after a partial sqlcmd run. Load Vương's
+fixture registry and principals, then prepare the test-only SP
 using `database/tests/khanh/KHANH-03.sql`.
 
 ```powershell
-sqlcmd -S "$env:TC_SQL_HOST" -d "$env:TC_TEST_DATABASE" -E -b -i database/tests/khanh/KHANH-03.sql
-sqlcmd -S "$env:TC_SQL_HOST" -d "$env:TC_TEST_DATABASE" -E -b -i database/tests/khanh/KHANH-04.sql
+sqlcmd -S "$env:TC_SQL_HOST" -d "$env:TC_TEST_DATABASE" -E -I -b -i database/tests/khanh/KHANH-03.sql
+sqlcmd -S "$env:TC_SQL_HOST" -d "$env:TC_TEST_DATABASE" -E -I -b -i database/tests/khanh/KHANH-04.sql
 mvn -B -Psqlserver-it verify
 ```
 
-SQL auth for sqlcmd uses `-U` with SQLCMDPASSWORD from the environment. JDBC uses
-TC_DB_USER / TC_DB_PASSWORD for the reviewed broker. Windows JDBC integrated auth
+SQL auth for sqlcmd uses `-U` with SQLCMDPASSWORD from the environment.
+`-I` enables QUOTED_IDENTIFIER for filtered indexes; migration runners must also use
+`-b` so SQL errors stop the run. The original 0010 is preserved, with 0012 repairing
+missing OTP indexes if an earlier runner continued after the filtered-index error.
+
+JDBC uses TC_DB_USER / TC_DB_PASSWORD for the reviewed broker. Windows JDBC integrated auth
 requires the Microsoft driver's matching native authentication DLL on java.library.path;
 a working `sqlcmd -E` does not itself configure JDBC authentication.
 

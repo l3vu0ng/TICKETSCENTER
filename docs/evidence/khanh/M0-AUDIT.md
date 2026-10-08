@@ -77,3 +77,8 @@ CI push đầu tiên của PR7 dừng ở missing FeaturePackageStructureTest/No
 Đã bổ sung 3 kiểm tra cấu trúc/mapping thực, giữ failIfNoTests. Kiểm lại 12:09:26 +07:00:
 clean verify/http-it exit0, 62 unit + 1 WAR IT, fail/error/skip0, 70 Java files đúng formatter;
 browser4viewport PASS. Không sửa CI SQL hoặc báo integration đã nghiệm thu.
+
+CI PR run37731033925: lint/architecture/unit PASS; SQL fail vì QUOTED_IDENTIFIER OFF
+ở filtered OTP index của0010, rồi Surefire No tests were executed do workflow chọn __none__.
+Đã bổ sung0012_identity_indexes.sql để sửa index thiếu với đầy đủ SET options và hướng dẫn
+sqlcmd -I -b, giữ0010 nguyên bản. Script sửa này cần xác minh riêng; chưa suy ra SQL acceptance PASS.

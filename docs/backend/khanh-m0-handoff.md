@@ -39,7 +39,7 @@ nested sẽ rollback. Không chờ email/provider khi transaction đang mở.
   không tự commit caller. IPN GET dùng chữ ký và response protocol riêng.
 - **Thái:** dùng actor/current-role guard/runner, error envelope, layout và UI states.
   Enum fulfillment hiện có của Thái được giữ nguyên khi ghép develop.
-- **Vương:** nhận 0010_identity.sql và đề xuất 0011_identity_validation.sql để review/đăng ký
+- **Vương:** nhận 0010_identity.sql và bổ sung 0011_identity_validation.sql/0012_identity_indexes.sql để review/đăng ký
   manifest; cấp fixture, DB USERS/principal hẹp, pool budget và grants. CI/browser-it do Vương nối.
 
 ## Giới hạn cần giữ khi phát triển
@@ -67,5 +67,9 @@ CI từ develop yêu cầu FeaturePackageStructureTest; đã bổ sung 3 kiểm 
 package/Jakarta, boundary Model và uniqueness của Servlet mappings, tất cả PASS.
 CI SQL còn gọi Day06IT/07IT/08IT/09IT/11IT chưa tồn tại trong bản ghép này.
 SQL env/name cũng khác hợp đồng TC_TEST_DATABASE.
+Run PR [37731033925](https://github.com/l3vu0ng/TICKETSCENTER/actions/runs/37731033925)
+đã đạt lint/architecture/unit; SQL job báo QUOTED_IDENTIFIER khi tạo filtered OTP index
+trong0010 và No tests were executed vì workflow chọn __none__/DayNNIT. Migration0012
+thêm đúng SET options và sửa index thiếu; runner cần sqlcmd -I -b. Không sửa0010 đã chia sẻ.
 Không sửa CI của thành viên khác hoặc làm integration skip để báo xanh. Vương cần nối
 manifest/fixture/principal/test targets thật; trạng thái GitHub CI phải đọc từ run thực tế.
