@@ -1,0 +1,82 @@
+VUONG M0 / 2026-10-08 / JDK25 / Maven3.9.16
+Routine main: baa15e76ef40c9e7bf030b05d4f857419fb75d50
+Foundation archive: 1edbceda45063491c662d09600c7b4f2e2d779b9
+Organization/Event compilation shells: temporary checkout only; no owner tables.
+SQL localhost: 17.0.1135.8; TCP Enabled=0; current sqlcmd transport Shared memory.
+
+red.log
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/CommissionRuleTest.java:[7,39] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/CommissionRuleTest.java:[20,13] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/SettlementTest.java:[19,13] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/SettlementTest.java:[20,13] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/CommissionRuleTest.java:[21,20] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/CommissionRuleTest.java:[21,59] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/CommissionRuleTest.java:[34,9] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/CommissionRuleTest.java:[52,57] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/CommissionRuleTest.java:[53,22] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/CommissionRuleTest.java:[54,57] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/SettlementTest.java:[19,45] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/SettlementTest.java:[19,80] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/SettlementTest.java:[21,9] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/SettlementTest.java:[28,9] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/SettlementTest.java:[31,22] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/SettlementTest.java:[40,9] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/SettlementTest.java:[43,22] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/SettlementTest.java:[53,9] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/SettlementTest.java:[63,9] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/SettlementTest.java:[70,58] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/SettlementTest.java:[72,59] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/SettlementTest.java:[73,22] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/SettlementTest.java:[76,58] cannot find symbol
+[ERROR] /C:/Users/Le Vuong/AppData/Local/Temp/tc-vuong-m0-9336b1181142489899935387ab362fb3/verify/src/test/java/vn/ticketscenter/model/settlement/SettlementTest.java:[77,22] cannot find symbol
+
+final-package.log
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.044 s -- in vn.ticketscenter.config.ApplicationConfigTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.069 s -- in vn.ticketscenter.model.identity.UserTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.105 s -- in vn.ticketscenter.model.settlement.CommissionRuleTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.027 s -- in vn.ticketscenter.model.settlement.SettlementTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.036 s -- in vn.ticketscenter.service.settlement.CommissionPolicyValidatorTest
+[INFO] Tests run: 62, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+
+sql-foundation-it.log
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.045 s -- in vn.ticketscenter.config.ApplicationConfigTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.068 s -- in vn.ticketscenter.model.identity.UserTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.096 s -- in vn.ticketscenter.model.settlement.CommissionRuleTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.027 s -- in vn.ticketscenter.model.settlement.SettlementTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.031 s -- in vn.ticketscenter.service.settlement.CommissionPolicyValidatorTest
+[INFO] Tests run: 62, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.111 s -- in vn.ticketscenter.acceptance.VuongMigrationIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.121 s -- in vn.ticketscenter.security.AuthorizationMatrixIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.203 s -- in vn.ticketscenter.security.DatabasePrincipalsIT
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+
+sql-foundation-validation.log
+APPLIED 0050_settlements_audit.sql
+APPLIED 0700_roles_grants.sql
+MIGRATIONS PASS (FinancialSecurityFoundation); Full acceptance also requires seeds, inventory and real module tests.
+PROVISIONED tc_buyer_user -> tc_buyer (Local)
+PROVISIONED tc_manager_user -> tc_manager (Local)
+PROVISIONED tc_checkin_user -> tc_checkin (Local)
+PROVISIONED tc_admin_user -> tc_platform_admin (Local)
+REAL LOGIN PASS tc_buyer_login
+REAL LOGIN PASS tc_manager_login
+REAL LOGIN PASS tc_checkin_login
+REAL LOGIN PASS tc_admin_login
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.096 s -- in vn.ticketscenter.model.settlement.CommissionRuleTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.027 s -- in vn.ticketscenter.model.settlement.SettlementTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.031 s -- in vn.ticketscenter.service.settlement.CommissionPolicyValidatorTest
+[INFO] Tests run: 62, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.111 s -- in vn.ticketscenter.acceptance.VuongMigrationIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.121 s -- in vn.ticketscenter.security.AuthorizationMatrixIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.203 s -- in vn.ticketscenter.security.DatabasePrincipalsIT
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+EMPTY ROWS PASS
+CLEANUP PASS
+
+JPA mapping IT attempted: 4 IT, 3 passed / 1 error / 0 skipped.
+Driver TCP localhost:1433 connection refused; no mapping assertions reached.
+Actual feature branch compile: missing jakarta.persistence, Hibernate, shared/owner types.
+Full migration scope preflight: BLOCKED, missing 0010/0020/0030/0040/0100.
