@@ -1,0 +1,11 @@
+2026-10-08; routine main 90800f7; foundation Khánh 7b403f2.
+Guard RED: exit 1, IdentityFinancialFoundation not yet accepted by runner.
+Guard GREEN: exit 0, 10 preflight/guard assertions passed.
+Real SQL Server localhost 17.0.1135.8; fresh dedicated random TicketsCenter_Test_* database.
+JDK25/Maven3.9.16; isolated checkout with temporary Organization/Event compile references only.
+mvn -B -Psqlserver-it -Dit.test=VuongMigrationIT clean verify:
+106 unit tests; 1 migration integration test; 0 failures/errors/skips; BUILD SUCCESS.
+IdentityFinancialFoundation installs/repeats 0010/0011/0050.
+Identity history/checksum/owner, trusted constraints/collation/empty fixtures and financial SQL checks passed.
+IDENTITY DATABASE CLEANUP PASS (confirmed database absent in master).
+Full schema/cross-FK/seed and owner Model integration remain BLOCKED.
