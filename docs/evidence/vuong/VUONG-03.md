@@ -1,5 +1,33 @@
 # VUONG-03 — principal và quyền DB nền
 
+## Cập nhật theo routine main 90800f7 (08/10/2026)
+
+Nhánh `feature/vuong/vuong-03-database-principals-part-3` nhận VUONG-02
+`b65f103` và foundation Khánh `7b403f2`. Đã hợp nhất manifest/runner để giữ
+cả `IdentityFinancialFoundation` và `FinancialSecurityFoundation`; không sửa
+0050/0700 đã áp dụng, không thêm broad grants hoặc object miền giả.
+
+Kiểm mới trên database test rỗng và prefix login ngẫu nhiên riêng:
+0010/0011/0050 APPLIED, kiểm identity history/schema PASS; tiếp 0050 UNCHANGED
+và 0700 APPLIED. Provisioning tạo bốn SQL login/user/role; từng login kết nối
+thật bằng SqlClient: admin đọc CommissionRule được, buyer/manager/check-in bị229.
+`mvn -B -Psqlserver-it -Dit.test=VuongMigrationIT,DatabasePrincipalsIT,AuthorizationMatrixIT verify`
+đạt **106 unit + 3 SQL IT, 0 failure/error/skipped**, WAR và formatter đạt.
+Kiểm role/SID/no sysadmin, effective DENY dù có competing GRANT, GRANT/REVOKE,
+repeat/history và rollback SQL01/02 đều đạt. Test rows về0; database và năm
+login test (bốn runtime + mapping probe) được dọn; master xác nhận CLEANUP PASS.
+Password chỉ sinh trong process và SqlParameter, không lưu/log.
+
+JDK25/Maven3.9.16, SQL Server localhost17.0.1135.8; checkout kiểm có hai
+Organization/Event reference tạm, không commit và không chứng minh JPA/owner.
+Log: [VUONG-03-refresh-validation.log](VUONG-03-refresh-validation.log).
+TransactionRunner/principal/shared types nay đã nhận từ Khánh; còn chờ owner
+review/tích hợp develop và runtime SQL qua TCP, các grant cho module thật,
+HTTP scope/worker và Azure. Khác với ghi chú lịch sử bên dưới, không còn
+block vì thiếu source TransactionRunner. Full M0 chưa đóng; chưa merge.
+
+---
+
 ## Cập nhật M0 ngày08/10/2026 — kiểm lại trên SQL Server thật
 
 Nhánh `feature/vuong/vuong-03-database-principals-part-2` tiếp nối `305425e`,

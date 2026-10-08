@@ -1,17 +1,19 @@
 package vn.ticketscenter.security;
 
-import org.junit.jupiter.api.Test;
-import vn.ticketscenter.support.VuongSqlTestSupport;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import vn.ticketscenter.support.VuongSqlTestSupport;
 
 class DatabasePrincipalsIT {
     @Test
     void mapsFourRuntimeUsersToRealLoginsAndOnlyTheirRuntimeRole() throws Exception {
         List<String> command = VuongSqlTestSupport.connectionArguments();
-        command.addAll(List.of("-Q", """
+        command.addAll(
+                List.of(
+                        "-Q",
+                        """
                 SET NOCOUNT ON;
                 DECLARE @expected TABLE(userName sysname, roleName sysname);
                 INSERT @expected VALUES('tc_buyer_user','tc_buyer'),('tc_manager_user','tc_manager'),

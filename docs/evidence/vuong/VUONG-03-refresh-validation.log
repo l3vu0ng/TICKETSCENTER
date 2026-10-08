@@ -1,0 +1,12 @@
+2026-10-08; routine main 90800f7; shared foundation 7b403f2.
+Real SQL Server localhost 17.0.1135.8, dedicated random TicketsCenter_Test_* database/login prefix.
+APPLIED 0010_identity.sql / 0011_identity_validation.sql / 0050_settlements_audit.sql.
+VUONG-02 IDENTITY PASS: history, owner, checksums, tables, trusted constraints, binary collation, empty fixtures.
+UNCHANGED 0050_settlements_audit.sql; APPLIED 0700_roles_grants.sql.
+PROVISIONED four runtime SQL login/user/role mappings.
+REAL LOGIN PASS buyer, manager, check-in, admin: admin financial SELECT allowed; other three SQL229.
+JDK25/Maven3.9.16; current own source with temporary Organization/Event references in isolated verification only.
+mvn -B -Psqlserver-it -Dit.test=VuongMigrationIT,DatabasePrincipalsIT,AuthorizationMatrixIT verify:
+106 unit; 3 SQL integration tests; 0 failures/errors/skips; WAR; formatter; BUILD SUCCESS.
+EMPTY ROWS PASS; CLEANUP PASS (database + five temporary SQL logins absent in master).
+Runtime JDBC mapping, whole-schema Full/FK/seed, whole-project owner integration and peer review remain pending.
