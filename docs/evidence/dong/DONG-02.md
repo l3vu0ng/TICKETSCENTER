@@ -31,8 +31,7 @@ Lưu ý evidence CI: workflow 02-unit-integration-tests.yml có summary PASS lit
 - 0020_organizations_events.sql: sáu bảng, C02/03/04/05/10, CHECK kỹ thuật, năm FK nội miền NO ACTION. Atomic standalone, savepoint trong transaction caller, fail rõ khi objects đã tồn tại.
 - event-categories.sql: seed theo registry JSON do Vương cung cấp trên connection; bind qua SESSION_CONTEXT, không tự sinh UUID. Validate registry, khóa range update/insert, từ chối đổi ID/code mapping; giữ references khi chạy lại.
 - DONG-02.sql: 18 ca constraint lỗi được kiểm bằng THROW/error number/constraint name; các ca hợp lệ equality/quota3/giá0/default, multirow atomicity và outer/savepoint rollback. Chưa chạy.
-- UserOrganizationRole.java: JPA mapping kỹ thuật lazy, enum STRING, unique pair; không là lớp nghiệp vụ thứ 16.
-- JpaMembershipAuthorizationRepository.java: dùng EntityManager caller, query bind user/org, giữ link inactive trong projection. DONG-01 interface/DTO cần được ghép; quyền mutation phải recheck dưới khóa ở use case, không suy ra an toàn revoke race từ query này.
+- UserOrganizationRole.java / JpaMembershipAuthorizationRepository.java: đã được thêm trong checkpoint 968d52e nhưng chưa compile được; đã rút khỏi source trong lần sửa CI bên dưới. Mã còn trong lịch sử Git; phần mapping/query vẫn BLOCKED.
 - dong-schema.md: data dictionary, giới hạn kỹ thuật, FK proposal cho Vương, manifest/registry transport và các phần thiếu.
 
 ## Môi trường / expected / actual
@@ -77,3 +76,13 @@ Lệnh DB phải theo runbook/principal/test DB thật do Vương/Khánh cấp. 
 4. VUONG-03 + môi trường: principal/credential config và test database thật; kiểm migrations/constraints/multirow/outer rollback/seed repeat, grants riêng.
 
 Checkpoint chỉ lưu source; chưa hoàn thành DONG-02 hoặc M0. Phần còn lại cần các artifact nêu trên rồi chạy SQL/JPA test thật trước nghiệm thu. Không push/merge/deploy hoặc sửa cấu hình GitHub.
+
+## Sửa lỗi compiler sau lần push
+
+Người dùng cung cấp CI log ngày 2026-10-08: Maven compiler 3.15.0 biên dịch 7 main sources, thất bại do jakarta.persistence, Organization/User/role, MembershipAccess và MembershipAuthorizationRepository không tồn tại trên revision đã push. Đây là lỗi đưa Java phụ thuộc vào nhánh schema độc lập, không phải formatting. Tái hiện bằng OpenJDK 25.0.2 trước sửa: javac exit 1, 47 errors.
+
+Đã rút hai file Java phụ thuộc khỏi source; giữ migration/seed/SQL tests. Không thay pom, workflow, compiler excludes, test flags hoặc tạo bản sao type của thành viên khác. Expected sau sửa: toàn bộ main source hiện có compile bằng JDK 25; task DONG-02 vẫn chưa nghiệm thu JPA/SQL. Hai bản source trước đó nằm ở commit 968d52e và có thể review bằng git show.
+
+Fetch mới nhất: develop đã tiến đến 98ba483 và ghép nền Khánh; main ở 90800f7. Chữ ký User vẫn dùng Object, DONG-01/types của Liêm/Vương còn thiếu. Phần audit M0 phía trên phản ánh thời điểm d2282d7, không dùng làm kết luận cho develop mới này. Không tự merge develop hoặc sửa source chung trong lần sửa compiler.
+
+testedRevision lần sửa: 968d52e + diff rút hai file Java và cập nhật tài liệu. Lệnh `javac --release 25 -encoding UTF-8 -d target/dong-02-fix/after` với **toàn bộ** main Java source còn lại: exit 0, compile 5 files. Không có compiler excludes hoặc peer stub. Parse lại ba SQL scripts với ScriptDom: 0 lỗi, exit 0; git diff --check exit 0. Maven không có trên PATH và chưa tìm thấy executable trong Downloads/workspace, nên chưa tái chạy nguyên lệnh Maven CI ở máy này; không báo toàn pipeline PASS từ kiểm chứng javac. SQL/JPA vẫn BLOCKED.
