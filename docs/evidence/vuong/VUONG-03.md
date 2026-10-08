@@ -1,5 +1,46 @@
 # VUONG-03 — principal và quyền DB nền
 
+## Cập nhật M0 ngày08/10/2026 — kiểm lại trên SQL Server thật
+
+Nhánh `feature/vuong/vuong-03-database-principals-part-2` tiếp nối `305425e`,
+nhận Model VUONG-01 `a4a37a3` và cập nhật mapping VUONG-02 `98f8c5b` bằng
+merge local có Task-Id. Routine main `baa15e7` không đổi chuẩn quyền/owner.
+Không sửa migration 0050/0700 đã áp dụng hoặc mở rộng quyền runtime.
+
+Thực chạy mới trên SQL Server localhost `17.0.1135.8` bằng hai database test
+và hai prefix login ngẫu nhiên riêng: provisioning tạo đủ bốn SQL login/user
+đúng role, password sinh trong process environment/SqlParameter và không lưu
+vào source/log/URL. Kết nối SqlClient riêng bằng từng SQL login: admin SELECT
+CommissionRule thành công; buyer/manager/check-in bị lỗi229. Đây là SQL login
+thật, không chỉ EXECUTE AS dưới migration principal.
+
+`DatabasePrincipalsIT` kiểm SID/login, membership đúng role, không role thừa/
+sysadmin; `AuthorizationMatrixIT` chạy SQL03 để kiểm hiệu lực DENY dù có competing
+GRANT, GRANT rồi REVOKE, admin đọc và các lệnh denied. `VuongMigrationIT`
+kiểm apply/repeat/history và SQL01/02. Lượt cuối:
+`mvn -B -Psqlserver-it -Dit.test=VuongMigrationIT,DatabasePrincipalsIT,AuthorizationMatrixIT verify`
+trên archive Khánh `1edbced` + toàn file Vương01/02/03:
+**62 unit +3 IT, failure/error/skipped=0; WAR tạo**. Scope chỉ
+FinancialSecurityFoundation, chưa phải toàn dự án tích hợp.
+
+Test business rows rollback về0. Mỗi lượt dọn database test và năm login
+có prefix riêng (bốn runtime + một mapping probe); master xác nhận CLEANUP
+PASS. Mapping probe dùng user test riêng, chỉ SELECT/INSERT trên năm bảng
+cho test Hibernate; không cấp thêm quyền cho runtime roles hoặc db_owner.
+Lượt có `VuongFinancialMappingIT` fail kết nối JDBC do TCP SQL Server tắt;
+không nhận đó là PASS runtime JPA. Không bật TCP/restart SQL Server trong phiên.
+Log chung: [VUONG-01-m0-validation.log](VUONG-01-m0-validation.log).
+
+**Bàn giao M0:** bốn role/login/provisioning và các kiểm quyền nền có thật.
+Khánh còn giao TransactionRunner/pool/principal context và foundation vào
+develop; chủ SQL module giao object/caller/guard để thêm migration quyền hẹp.
+DENY các view/function chưa tồn tại, worker limits, buyer SP09 0đ, admin SP16,
+scope HTTP và Azure vẫn cần input/test riêng; không tick đạt từ SELECT bảng nền.
+Chưa push/merge remote hoặc peer review chấp thuận. Các phần dưới là lịch sử
+ngày07; Model/persistence Java nêu “chưa có” ở đó đã được bổ sung trong task01.
+
+---
+
 Ngày 07/10/2026; **PARTIAL**, toàn module/runtime/HTTP/Azure **BLOCKED**. Nhánh `feature/vuong/vuong-03-database-principals-part-1` tiếp nối VUONG-02 `efcdcbb` và VUONG-01 `be8fabc` local, cùng ancestry develop `04336c2`. Hợp đồng không đổi. Commit chứa các file/evidence là revision quyền được kiểm; Issue #5 ghi SHA sau commit. Chưa push/merge/PR hoặc review chấp thuận.
 
 ## File và giới hạn quyền
