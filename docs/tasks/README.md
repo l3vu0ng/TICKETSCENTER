@@ -18,8 +18,6 @@ Mỗi bản có mục tiêu, nguồn spec/diagram, file sở hữu, contracts DT
 
 ## 2. Tài liệu chung phải đọc
 
-Hướng dẫn thao tác: [Trình tự làm việc từng bước cho thành viên và AI](WORK-SEQUENCE.md), gồm thứ tự M0–M4, điểm kiểm tra dependency, push/PR/merge và mẫu bàn giao. Dùng cùng các nguồn bắt buộc dưới đây.
-
 1. [spec.md](../../spec.md) và [diagram.md](../classdiagram/diagram.md): nguồn nghiệp vụ, thuộc tính/phương thức/quan hệ.
 2. [TEAM-CONTRACT](TEAM-CONTRACT.md): ownership Model/Servlet/SQL, types/DTO/Service/SPI, migrations/fixture/phase và cách ghép.
 3. [GIT-WORKFLOW](GIT-WORKFLOW.md): GitFlow giản lược main/develop/feature, nhánh task chung cho tính năng/sửa lỗi, không có nhánh release hoặc loại nhánh sửa khẩn cấp riêng; Conventional Commits, Issue/PR/review/tag/evidence.
@@ -60,8 +58,7 @@ Hồ sơ DBMS theo spec §14.12: sáu chương/50–100 trang nội dung, slide<
 
 ```text
 Đọc spec.md, docs/classdiagram/diagram.md, docs/tasks/TEAM-CONTRACT.md,
-docs/tasks/GIT-WORKFLOW.md, docs/tasks/WORK-SEQUENCE.md và docs/tasks/<ten>.md
-trong cùng repository.
+docs/tasks/GIT-WORKFLOW.md và docs/tasks/<ten>.md trong cùng repository.
 Kiểm tra trạng thái repo và task/dependency thực; chỉ triển khai phần được giao.
 Giữ ownership, DTO/Service/Servlet, SQL manifest và format prototype; không vẽ ảnh thiếu.
 Làm từng đơn vị có kiểm chứng, lưu evidence; tính năng và sửa lỗi dùng chung

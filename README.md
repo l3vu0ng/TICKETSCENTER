@@ -59,7 +59,6 @@ Thông tin SMTP/email, lưu ảnh, URL VNPAY Sandbox và giới hạn kết nố
 
 ## Tài liệu
 
-- [Trình tự làm việc từng bước cho thành viên và AI](docs/tasks/WORK-SEQUENCE.md)
 - [Đặc tả thiết kế](spec.md)
 - [Sơ đồ 15 class nghiệp vụ](docs/classdiagram/diagram.md)
 - [Danh mục tài liệu và nguồn chuẩn](docs/README.md)

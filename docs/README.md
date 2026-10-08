@@ -10,7 +10,6 @@
 | [Sơ đồ lớp](classdiagram/diagram.md) | Nguồn chuẩn về 15 class, thuộc tính, phương thức và quan hệ |
 | [Bản sao tham khảo](references/SPEC.md) | Đồng bộ từ đặc tả gốc; chỉ điều chỉnh đường dẫn tương đối |
 | [Năm bản nhiệm vụ thành viên](tasks/README.md) | 76 task toàn dự án; mục tiêu, API/SQL/UI/tests, dependencies và bàn giao |
-| [Trình tự làm việc cho thành viên và AI](tasks/WORK-SEQUENCE.md) | Các bước nhận task, kiểm dependency, triển khai, push/review/merge, cập nhật develop và nghiệm thu main; mẫu giao việc và bàn giao |
 | [Hợp đồng nhóm](tasks/TEAM-CONTRACT.md) / [Quy trình Git](tasks/GIT-WORKFLOW.md) | Ownership và hợp đồng chung; main/develop/feature, nhánh task chung cho tính năng và sửa lỗi, PR/review/tag; không có nhánh release hoặc loại nhánh sửa khẩn cấp riêng |
 | [Đánh giá GitFlow](tasks/GITFLOW-GUIDE-REVIEW.md) / [hướng dẫn Word gốc](references/GitFlow_Workflow_Guide.docx) | Đối chiếu tài liệu tham khảo; quy trình dự án trong GIT-WORKFLOW được ưu tiên khi thao tác Git |
 | [Lịch backend cũ](tasks/BACKEND-21-DAYS.md) | 84 đầu việc/351 giờ ước lượng, giữ tham khảo và truy vết |
