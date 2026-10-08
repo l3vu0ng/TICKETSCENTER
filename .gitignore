@@ -37,4 +37,14 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Secrets — NEVER commit these ###
+.env
+*.env
+*.env.local
+
+### IntelliJ IDEA extra ###
+.idea/
+!.idea/codeStyles/
+!.idea/copyright/
 .codegraph/
