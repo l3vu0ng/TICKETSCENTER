@@ -1,5 +1,79 @@
 # VUONG-01 — chính sách phí ban đầu, phần M0
 
+## Cập nhật M0 ngày 08/10/2026 — Model và hợp đồng tài chính
+
+Nhánh `feature/vuong/vuong-01-finance-contracts-part-2`, tiếp nối `be8fabc`;
+nền develop vẫn `04336c267c38c959d3bceaa59cfc08c7ee828407`.
+Đã đối chiếu routine ở main `baa15e76ef40c9e7bf030b05d4f857419fb75d50`
+với spec/diagram, TEAM-CONTRACT, CONVENTIONS, API-MAP, COVERAGE, GIT-WORKFLOW
+và task Vương. Routine gán nhầm task: 0050 thuộc VUONG-01, 0100 thuộc
+VUONG-02; VUONG-04 là chính sách phí/F02/TR03 ở M1 theo hợp đồng chuẩn.
+Giữ task ID chuẩn, chỉ sửa file Vương sở hữu.
+
+**Đã cung cấp:** hai entity với quan hệ có kiểu `Organization`/`Event`,
+enum trạng thái/kết quả, bốn mapping persistence, DTO tài chính, interface
+CommissionService (gồm getEffective cho Đông) và SettlementService.
+Các interface chưa có implementation M1/M3; không trả thành công giả.
+Không tạo business class Payout/SettlementItem, không chép shared types của Khánh.
+
+| Diagram/schema | File/hành vi | Kiểm chứng |
+|---|---|---|
+| ratePercent, fixedFee, effectiveFrom/effectiveTo, Organization | CommissionRule: BigDecimal/Instant, ManyToOne, PK/version; không setter sửa applied terms | Compile trên nền Khánh + fixture quan hệ |
+| isEffectiveAt | Khoảng [from,to), thiếu now trả400 | CommissionRuleTest: bốn biên thời gian/null |
+| calculateFee | HALF_UP đồng nguyên, cap remaining; 0 trả0; từ chối null/âm/ngoài decimal | CommissionRuleTest: 12 ca, gồm 200001→5000, 20→20, 25→3 |
+| Event, status, gross/refund/commission, paid/pending | Settlement: OneToOne unique eventId, PK/version, confirmedAt; BigDecimal trực tiếp | SettlementTest + SQL01 |
+| /netPayable, /availableToPay | Getter dẫn xuất, @Transient; không ghi vào computed SQL columns | Tổng 500000−100000−50000=350000; pending trừ available |
+| recalculate/confirm | Chỉ DRAFT; kiểm toàn bộ trước mutation; chốt tổng, net0 thành PAID | SettlementTest: frozen totals, invalid-input atomicity, zero-net |
+| beginPayout/recordPayoutResult | Reserve theo số dư; FAILED giải phóng; SUCCEEDED tăng paid; PAID chỉ paid=net và pending=0 | SettlementTest: hai reservation, failed/new attempt, partial/full paid, vượt số dư |
+| Snapshot/log/provider/audit | Composite snapshot PK; UUID IDs; enum strings; nvarchar; Instant UTC datetime2; @Immutable read projections | Biên dịch đạt; JPA→SQL roundtrip BLOCKED (TCP local tắt) |
+
+**Ranh giới payout:** Service/SP16 phải khóa Settlement, kiểm log cùng payoutId/
+amount và replay trước gọi model. Model kiểm invariant tổng; không giữ map lịch
+sử hoặc tự chứng minh idempotency. Confirm cũng cần Service/SP15 kiểm endTime,
+nguồn tiền và nghĩa vụ chưa giải quyết trong cùng transaction. M0 không phải
+nghiệm thu payout/confirmation nghiệp vụ M3.
+
+### Kiểm chứng mới, không sử dụng kết quả lịch sử để báo PASS
+
+JDK25, Maven3.9.16; archive nền Khánh đúng `1edbceda45063491c662d09600c7b4f2e2d779b9`
+và overlay source/test Vương trong thư mục tạm. Chỉ thư mục tạm có hai class
+quan hệ rỗng Organization/Event phục vụ compilation; không tạo bảng owner,
+không commit skeleton vào repository. Unit dùng fixture JPA no-arg chỉ làm
+tham chiếu, không gọi/test hành vi chủ miền.
+
+| Lệnh/ca | Actual | Trạng thái |
+|---|---|---|
+| Test viết trước model, `mvn -B -Dtest=CommissionRuleTest,SettlementTest test` | Thiếu model/type, exit1 | RED |
+| Thử Mockito trên JDK25 | Byte Buddy nền không nhận Java25; bỏ nhu cầu Mockito trong test mới | Lỗi hạ tầng được tránh bằng fixture, không đổi pom Khánh |
+| `mvn -B clean package` trên checkout kiểm riêng | 62 unit: 15 Khánh + 21 validator + 12 CommissionRule + 14 Settlement; 0 failure/error/skipped; WAR | PASS riêng, không phải develop tích hợp |
+| `mvn -B -Psqlserver-it -Dit.test=VuongMigrationIT,DatabasePrincipalsIT,AuthorizationMatrixIT verify` | 62 unit + 3 IT; 0 failure/error/skipped; SQL01 20 constraint rejections và rollback thật | PASS nền tài chính/quyền local |
+| Thêm `VuongFinancialMappingIT` vào danh sách IT | Driver TCP localhost:1433 connection refused; IT lỗi, không skip | BLOCKED JPA mapping roundtrip |
+| Đọc registry SQL Server / listener / connection hiện hành | TCP Enabled=0; kết nối SQLcmd Shared memory; chỉ listener local1434 | Chưa đổi/restart cấu hình SQL Server |
+| `mvn -B -DskipTests compile` trên nhánh thực | Thiếu dependency jakarta/hibernate/shared types/Organization/Event | BLOCKED build tích hợp |
+
+Mapping IT có guard DB test, validate schema trước insert, đọc BigDecimal/
+UUID/enum/UTC100ns/Unicode qua Hibernate và rollback + kiểm qua session mới.
+Tái lập với SQL Server bật TCP, `TC_JDBC_URL` (databaseName=TicketsCenter_Test_*),
+`TC_JDBC_USER`, `TC_JDBC_PASSWORD` từ process environment và principal test chỉ
+có quyền SELECT/INSERT trên năm bảng tài chính được dùng. Không chứa password
+trong URL/lệnh/evidence. Test chưa chạy tới assertion đọc dữ liệu, **không nhận
+mapping đã được nghiệm thu SQL**.
+
+Hai lượt SQL dùng database test và prefix login ngẫu nhiên riêng. Bốn runtime
+login đăng nhập thật; admin đọc CommissionRule, ba principal còn lại bị lỗi229.
+Ca GRANT/REVOKE/DENY có thực chứng SQL03. Test rows rollback về0; database và
+năm login của mỗi lượt (bốn runtime + một mapping probe) được dọn, kiểm master
+xác nhận CLEANUP PASS. Không động database demo hoặc file cấu hình người dùng.
+Log lọc: [VUONG-01-m0-validation.log](VUONG-01-m0-validation.log).
+
+**Còn thiếu để đóng M0:** Khánh đưa foundation/shared types vào develop;
+Đông giao Organization/Event và 0020; Khánh/Liêm/Thái giao 0010/0030/0040
+để ghép 0100/seed thật. Chưa có peer review chấp thuận. Chưa push/merge.
+Các phần dưới đây là evidence lịch sử, được giữ để truy vết; danh sách
+“chưa có Model” ngày07 đã được cập nhật bằng phần ngày08 này.
+
+---
+
 ## Tiếp tục: schema độc lập đã kiểm SQL Server thật
 
 Ngày 07/10/2026, sau commit policy `85192d4d04e3e7f2c3e40938b58d4b617b26d16c`; hợp đồng và remote không đổi. Thêm `database/migrations/0050_settlements_audit.sql` và `database/tests/vuong/VUONG-01.sql`, chỉ vùng Vương sở hữu. Commit chứa thay đổi này và evidence là revision schema được kiểm (lấy `git log -1 --format=%H -- database/migrations/0050_settlements_audit.sql`).
