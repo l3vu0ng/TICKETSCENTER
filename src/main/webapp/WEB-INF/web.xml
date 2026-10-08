@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd"
+         version="6.1"
+         metadata-complete="true">
+
+    <display-name>TicketsCenter</display-name>
+
+    <!-- ===== Listeners (ordered) ===== -->
+    <listener>
+        <listener-class>vn.ticketscenter.config.ApplicationLifecycleListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>vn.ticketscenter.config.PersistenceListener</listener-class>
+    </listener>
+
+    <!-- ===== Filters (ordered: correlation → error → security headers) ===== -->
+
+    <filter>
+        <filter-name>CorrelationIdFilter</filter-name>
+        <filter-class>vn.ticketscenter.filter.CorrelationIdFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CorrelationIdFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>ErrorHandlingFilter</filter-name>
+        <filter-class>vn.ticketscenter.filter.ErrorHandlingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ErrorHandlingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>SecurityHeadersFilter</filter-name>
+        <filter-class>vn.ticketscenter.filter.SecurityHeadersFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>SecurityHeadersFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>CsrfFilter</filter-name>
+        <filter-class>vn.ticketscenter.filter.CsrfFilter</filter-class>
+    </filter>
+    <filter-mapping><filter-name>CsrfFilter</filter-name><url-pattern>/*</url-pattern></filter-mapping>
+    <filter>
+        <filter-name>RequestValidationFilter</filter-name>
+        <filter-class>vn.ticketscenter.filter.RequestValidationFilter</filter-class>
+    </filter>
+    <filter-mapping><filter-name>RequestValidationFilter</filter-name><url-pattern>/*</url-pattern></filter-mapping>
+    <filter>
+        <filter-name>AuthenticationFilter</filter-name>
+        <filter-class>vn.ticketscenter.filter.AuthenticationFilter</filter-class>
+    </filter>
+    <filter-mapping><filter-name>AuthenticationFilter</filter-name><url-pattern>/me/*</url-pattern></filter-mapping>
+
+    <!-- ===== Servlets ===== -->
+
+    <servlet>
+        <servlet-name>HealthServlet</servlet-name>
+        <servlet-class>vn.ticketscenter.controller.HealthServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>HealthServlet</servlet-name>
+        <url-pattern>/health/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AuthServlet</servlet-name>
+        <servlet-class>vn.ticketscenter.controller.identity.AuthServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AuthServlet</servlet-name>
+        <url-pattern>/auth/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>MeServlet</servlet-name>
+        <servlet-class>vn.ticketscenter.controller.identity.MeServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MeServlet</servlet-name>
+        <url-pattern>/me/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- ===== Session ===== -->
+    <session-config>
+        <!-- sessionTimeoutMinutes default 30; overridden by TC_SESSION_TIMEOUT_MINUTES -->
+        <session-timeout>30</session-timeout>
+        <cookie-config>
+            <http-only>true</http-only>
+            <secure>true</secure>
+        </cookie-config>
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
+
+    <!-- ===== Error pages ===== -->
+    <error-page>
+        <error-code>400</error-code>
+        <location>/WEB-INF/views/common/error.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>403</error-code>
+        <location>/WEB-INF/views/common/error.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/WEB-INF/views/common/error.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/WEB-INF/views/common/error.jsp</location>
+    </error-page>
+    <error-page>
+        <exception-type>java.lang.Throwable</exception-type>
+        <location>/WEB-INF/views/common/error.jsp</location>
+    </error-page>
+
+</web-app>
