@@ -1,0 +1,81 @@
+name: M0 build and browser verification
+
+on:
+  push:
+    branches: [develop, 'feature/vuong/**']
+  pull_request:
+    branches: [develop, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: m0-verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit-and-war:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: oracle
+          java-version: '25'
+          cache: maven
+      - name: Verify unit tests, formatting and package
+        run: mvn -B clean verify
+      - name: Unit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m0-unit-reports
+          path: target/surefire-reports/
+          if-no-files-found: warn
+
+  browser-foundation:
+    needs: unit-and-war
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TC_APP_ENV: test
+      TC_SQL_HOST: 127.0.0.1
+      TC_SQL_PORT: '1'
+      TC_DATABASE: ticketscenter_browser_test
+      TC_APP_BASE_URL: http://127.0.0.1:8080/ticketscenter
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: oracle
+          java-version: '25'
+          cache: maven
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: src/test/browser/package-lock.json
+      - name: Install pinned browser tooling
+        working-directory: src/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Create ephemeral test-only OTP configuration
+        run: printf 'TC_OTP_HMAC_SECRET=%s\n' "$(openssl rand -base64 32)" >> "$GITHUB_ENV"
+      - name: Verify packaged WAR in a real browser
+        run: mvn -B -Pbrowser-it clean verify
+      - name: Browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m0-browser-evidence
+          path: |
+            target/failsafe-reports/
+            target/browser-evidence/
+          if-no-files-found: warn
+      - name: Report exact M0 scope
+        if: always()
+        run: |
+          printf '%s\n' 'This job verifies M0 browser tooling only. SQL mapping/transactions and M1-M3 business E2E require their own evidence.' >> "$GITHUB_STEP_SUMMARY"
